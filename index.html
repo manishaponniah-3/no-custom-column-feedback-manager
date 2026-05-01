@@ -3417,10 +3417,6 @@
 
         // Open column management rail
         window.openColumnManagementRail = function(th) {
-            const columnName = th.getAttribute('data-column-name');
-            const columnId = th.getAttribute('data-column-id');
-            const columnType = th.getAttribute('data-column-type');
-
             const rail = document.getElementById('rightRail');
             const railContent = document.querySelector('.rail-content');
 
@@ -3429,31 +3425,64 @@
                 return;
             }
 
+            // Define all available columns
+            const availableColumns = [
+                { id: 'expected-completion', name: 'Expected Completion Date', type: 'date' },
+                { id: 'owner-assignee', name: 'Owner/Assignee', type: 'person' },
+                { id: 'issue-resolution', name: 'Issue Resolution', type: 'text' }
+            ];
+
             // Get all existing columns
+            const existingColumnIds = new Set();
             const existingColumns = [];
             document.querySelectorAll('.custom-column-header').forEach(header => {
+                const id = header.getAttribute('data-column-id');
+                existingColumnIds.add(id);
                 existingColumns.push({
-                    id: header.getAttribute('data-column-id'),
+                    id: id,
                     name: header.getAttribute('data-column-name'),
                     element: header
                 });
             });
 
+            // Get available columns to add
+            const columnsToAdd = availableColumns.filter(col => !existingColumnIds.has(col.id));
+
             railContent.innerHTML = `
                 <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Manage Columns</h2>
 
-                <div class="form-group">
-                    <label class="form-label">Active Columns</label>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        ${existingColumns.map(col => `
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;">
-                                <span style="font-size: 14px; color: #1a1d24;">${col.name}</span>
-                                <button class="btn" style="padding: 4px 10px; font-size: 12px; background: #fff; color: #ef4444; border-color: #fecaca;"
-                                        onclick="deleteColumnFromRail('${col.id}')">Remove</button>
-                            </div>
-                        `).join('')}
+                ${existingColumns.length > 0 ? `
+                    <div class="form-group">
+                        <label class="form-label">Active Columns</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            ${existingColumns.map(col => `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;">
+                                    <span style="font-size: 14px; color: #1a1d24;">${col.name}</span>
+                                    <button class="btn" style="padding: 4px 10px; font-size: 12px; background: #fff; color: #ef4444; border-color: #fecaca;"
+                                            onclick="deleteColumnFromRail('${col.id}')">Remove</button>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
-                </div>
+                ` : ''}
+
+                ${columnsToAdd.length > 0 ? `
+                    <div class="form-group">
+                        <label class="form-label">Available Columns</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            ${columnsToAdd.map(col => `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #fff; border-radius: 6px; border: 1px solid #e5e7eb;">
+                                    <span style="font-size: 14px; color: #6b7280;">${col.name}</span>
+                                    <button class="btn btn-primary" style="padding: 4px 10px; font-size: 12px;"
+                                            onclick="addColumnFromRail('${col.id}', '${col.name}', '${col.type}')">Add</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${columnsToAdd.length > 1 ? `
+                            <button class="btn" onclick="addAllColumnsFromRail()" style="margin-top: 12px; width: 100%;">Add All Columns</button>
+                        ` : ''}
+                    </div>
+                ` : '<p style="color: #6b7280; font-size: 14px;">All available columns have been added.</p>'}
 
                 <div style="display: flex; gap: 12px; margin-top: 32px;">
                     <button class="btn" onclick="closeRail()" style="flex: 1;">Close</button>
@@ -3462,6 +3491,114 @@
 
             rail.classList.add('open');
             document.getElementById('rightRailBackdrop').classList.add('open');
+        };
+
+        // Add column from rail
+        window.addColumnFromRail = function(columnId, columnName, columnType) {
+            const thead = document.querySelector('thead tr');
+            const lastTh = thead.querySelector('th:last-child');
+
+            const newTh = document.createElement('th');
+            newTh.className = 'custom-column-header';
+            newTh.style.width = '180px';
+            newTh.style.position = 'relative';
+            newTh.style.cursor = 'pointer';
+            newTh.textContent = columnName;
+            newTh.setAttribute('data-column-id', columnId);
+            newTh.setAttribute('data-column-name', columnName);
+            newTh.setAttribute('data-column-type', columnType);
+
+            // Click to open column management rail
+            newTh.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openColumnManagementRail(this);
+            });
+
+            thead.insertBefore(newTh, lastTh);
+
+            // Add cells to all rows
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row) => {
+                const newTd = document.createElement('td');
+                newTd.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
+                newTd.style.cursor = 'pointer';
+                newTd.setAttribute('data-column-type', columnType);
+                newTd.setAttribute('data-column-id', columnId);
+                newTd.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    editCustomCell(this, columnType);
+                });
+                const lastTd = row.querySelector('td:last-child');
+                row.insertBefore(newTd, lastTd);
+            });
+
+            updateAddColumnButton();
+
+            // Refresh the rail to show updated list
+            openColumnManagementRail(newTh);
+        };
+
+        // Add all columns from rail
+        window.addAllColumnsFromRail = function() {
+            const availableColumns = [
+                { id: 'expected-completion', name: 'Expected Completion Date', type: 'date' },
+                { id: 'owner-assignee', name: 'Owner/Assignee', type: 'person' },
+                { id: 'issue-resolution', name: 'Issue Resolution', type: 'text' }
+            ];
+
+            const existingColumnIds = new Set();
+            document.querySelectorAll('.custom-column-header').forEach(header => {
+                existingColumnIds.add(header.getAttribute('data-column-id'));
+            });
+
+            const columnsToAdd = availableColumns.filter(col => !existingColumnIds.has(col.id));
+
+            columnsToAdd.forEach(col => {
+                const thead = document.querySelector('thead tr');
+                const lastTh = thead.querySelector('th:last-child');
+
+                const newTh = document.createElement('th');
+                newTh.className = 'custom-column-header';
+                newTh.style.width = '180px';
+                newTh.style.position = 'relative';
+                newTh.style.cursor = 'pointer';
+                newTh.textContent = col.name;
+                newTh.setAttribute('data-column-id', col.id);
+                newTh.setAttribute('data-column-name', col.name);
+                newTh.setAttribute('data-column-type', col.type);
+
+                // Click to open column management rail
+                newTh.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openColumnManagementRail(this);
+                });
+
+                thead.insertBefore(newTh, lastTh);
+
+                // Add cells to all rows
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach((row) => {
+                    const newTd = document.createElement('td');
+                    newTd.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
+                    newTd.style.cursor = 'pointer';
+                    newTd.setAttribute('data-column-type', col.type);
+                    newTd.setAttribute('data-column-id', col.id);
+                    newTd.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        editCustomCell(this, col.type);
+                    });
+                    const lastTd = row.querySelector('td:last-child');
+                    row.insertBefore(newTd, lastTd);
+                });
+            });
+
+            updateAddColumnButton();
+
+            // Refresh the rail to show updated list
+            const firstColumn = document.querySelector('.custom-column-header');
+            if (firstColumn) {
+                openColumnManagementRail(firstColumn);
+            }
         };
 
         // Delete column from rail
