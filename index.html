@@ -1,0 +1,3932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Version: 2026-04-28-14:15 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>AI Feedback Manager - Cresta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f5f5f7;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 207px;
+            background: #1a1d24;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 0;
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .nav-section {
+            margin-bottom: 4px;
+        }
+
+        .nav-item {
+            padding: 8px 20px;
+            font-size: 14px;
+            color: #a0a0a8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #252831;
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: #2d3139;
+            color: #fff;
+            border-left: 3px solid #6366f1;
+        }
+
+        .nav-item.sub {
+            padding-left: 40px;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e5e5e7;
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1d24;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #d1d1d6;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f5f5f7;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #666;
+            border-color: #d1d1d6;
+            font-size: 13px;
+        }
+
+        .btn-primary:hover {
+            background: #f5f5f7;
+            color: #1a1d24;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            overflow: hidden;
+            padding: 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e5e7;
+            flex-shrink: 0;
+        }
+
+        .tab {
+            padding: 12px 4px;
+            font-size: 15px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -1px;
+        }
+
+        .tab.active {
+            color: #1a1d24;
+            border-bottom-color: #6366f1;
+            font-weight: 600;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .search-input, .filter-select {
+            padding: 10px 14px;
+            border: 1.5px solid #d1d1d6;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .search-input {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .filter-select {
+            min-width: 200px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .filter-select option {
+            padding: 10px;
+            background: #fff;
+            color: #1a1d24;
+        }
+
+        #customDateStart, #customDateEnd {
+            min-width: 150px;
+        }
+
+        /* Table */
+        .table-container {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e5e5e7;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .table-wrapper {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e5e7;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1d24;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: visible;
+        }
+
+        thead {
+            position: relative;
+            z-index: 5;
+        }
+
+        tbody {
+            position: relative;
+            z-index: 1;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            background: #fafafa;
+            border-bottom: 2px solid #e5e5e7;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            position: relative;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: #f0f0f2;
+            color: #1a1d24;
+        }
+
+        th.sortable::after {
+            content: '↕';
+            color: #999;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        th.sortable.sorted-asc::after {
+            content: '↑';
+            color: #6366f1;
+        }
+
+        th.sortable.sorted-desc::after {
+            content: '↓';
+            color: #6366f1;
+        }
+
+        td {
+            padding: 18px 20px;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f7;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+            position: relative;
+            z-index: 100;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .status:hover {
+            opacity: 0.85;
+        }
+
+        .status-picker {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            min-width: 150px;
+            padding: 4px 0;
+        }
+
+        .status-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reviewed-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+            cursor: help;
+            margin-left: 2px;
+        }
+
+        .reviewed-badge::before {
+            content: "✓";
+        }
+
+        .status-picker.open {
+            display: block;
+        }
+
+        .status-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-option:hover {
+            background: #f5f5f7;
+        }
+
+        /* Agent filter dropdown */
+        .agent-filter-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e5e5e7;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            min-width: 200px;
+            padding: 4px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .agent-filter-dropdown.open {
+            display: block;
+        }
+
+        .agent-filter-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1d24;
+        }
+
+        .agent-filter-option:hover {
+            background: #f5f5f7;
+        }
+
+        .agent-filter-option.selected {
+            background: #eff6ff;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .status-created { background: #fee; color: #c33; }
+        .status-inprogress { background: #ffeaa7; color: #b8860b; }
+        .status-testing { background: #dfe6ff; color: #4355db; }
+        .status-verifying { background: #e9dcff; color: #7c3aed; }
+        .status-closed { background: #d1fae5; color: #059669; }
+
+        .status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .dot-created { background: #ef4444; }
+        .dot-inprogress { background: #eab308; }
+        .dot-testing { background: #3b82f6; }
+        .dot-verifying { background: #a855f7; }
+        .dot-closed { background: #10b981; }
+
+        /* Priority badges - Linear style */
+        .priority-badge {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 1.5px;
+            height: 14px;
+            margin-right: 8px;
+            opacity: 0.6;
+        }
+
+        .priority-badge .bar {
+            width: 2px;
+            background: #6b7280;
+            border-radius: 1px;
+        }
+
+        .priority-p0 .bar:nth-child(1) { height: 100%; background: #dc2626; }
+        .priority-p0 .bar:nth-child(2) { height: 85%; background: #dc2626; }
+        .priority-p0 .bar:nth-child(3) { height: 70%; background: #dc2626; }
+        .priority-p0 .bar:nth-child(4) { height: 55%; background: #dc2626; }
+
+        .priority-p1 .bar:nth-child(1) { height: 100%; background: #ea580c; }
+        .priority-p1 .bar:nth-child(2) { height: 85%; background: #ea580c; }
+        .priority-p1 .bar:nth-child(3) { height: 70%; background: #ea580c; }
+        .priority-p1 .bar:nth-child(4) { height: 55%; background: #d1d5db; }
+
+        .priority-p2 .bar:nth-child(1) { height: 100%; background: #eab308; }
+        .priority-p2 .bar:nth-child(2) { height: 85%; background: #eab308; }
+        .priority-p2 .bar:nth-child(3) { height: 70%; background: #d1d5db; }
+        .priority-p2 .bar:nth-child(4) { height: 55%; background: #d1d5db; }
+
+        .priority-p3 .bar:nth-child(1) { height: 100%; background: #9ca3af; }
+        .priority-p3 .bar:nth-child(2) { height: 85%; background: #d1d5db; }
+        .priority-p3 .bar:nth-child(3) { height: 70%; background: #d1d5db; }
+        .priority-p3 .bar:nth-child(4) { height: 55%; background: #d1d5db; }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 7px 14px;
+            border: 1.5px solid #d1d1d6;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #f5f5f7;
+            border-color: #6366f1;
+            color: #6366f1;
+            transform: translateY(-1px);
+        }
+
+        .action-btn.linked {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .action-btn.linked:hover {
+            background: #dbeafe;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .test-tube-icon, .ticket-icon {
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .test-tube-icon:hover, .ticket-icon:hover {
+            transform: scale(1.15);
+        }
+
+        .test-tube-icon.grey, .ticket-icon.grey {
+            filter: grayscale(100%) opacity(0.4);
+        }
+
+        .test-tube-icon.blue, .ticket-icon.blue {
+            color: #3b82f6;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #fff;
+            min-width: 180px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            z-index: 1;
+            margin-top: 4px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f5f7;
+        }
+
+        .email {
+            color: #666;
+        }
+
+        .title-link {
+            color: #1a1d24;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .title-link:hover {
+            color: #6366f1;
+        }
+
+        /* Right Rail Backdrop */
+        .right-rail-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .right-rail-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Right Rail */
+        .right-rail {
+            position: fixed;
+            right: -500px;
+            top: 0;
+            width: 500px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-rail.open {
+            right: 0;
+        }
+
+        .rail-header {
+            display: none;
+        }
+
+        .rail-title {
+            display: none;
+        }
+
+        .editable-title {
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1d24;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            background: transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .editable-title:hover {
+            background: #f5f5f7;
+        }
+
+        .editable-title:focus {
+            outline: none;
+            background: #fff;
+            border: 1.5px solid #6366f1;
+        }
+
+        .status-select {
+            appearance: none;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            transition: opacity 0.2s;
+        }
+
+        .status-select:hover {
+            opacity: 0.8;
+        }
+
+        .status-select:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+        }
+
+        .status-select.status-created {
+            background: #fee;
+            color: #c33;
+        }
+
+        .status-select.status-inprogress {
+            background: #ffeaa7;
+            color: #b8860b;
+        }
+
+        .status-select.status-testing {
+            background: #dfe6ff;
+            color: #4355db;
+        }
+
+        .status-select.status-verifying {
+            background: #e9dcff;
+            color: #7c3aed;
+        }
+
+        .status-select.status-closed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-select option {
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 4px;
+        }
+
+        .status-select option[value="created"] {
+            background: #fee;
+            color: #c33;
+        }
+
+        .status-select option[value="inprogress"] {
+            background: #ffeaa7;
+            color: #b8860b;
+        }
+
+        .status-select option[value="testing"] {
+            background: #dfe6ff;
+            color: #4355db;
+        }
+
+        .status-select option[value="verifying"] {
+            background: #e9dcff;
+            color: #7c3aed;
+        }
+
+        .status-select option[value="closed"] {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-dropdown-custom {
+            position: relative;
+            display: inline-block;
+        }
+
+        .status-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 8px;
+            background: #fff;
+            border: 1px solid #e5e5e7;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            min-width: 180px;
+            padding: 8px;
+        }
+
+        .status-dropdown-custom:hover .status-dropdown-menu,
+        .status-dropdown-menu:hover {
+            display: block;
+        }
+
+        .status-dropdown-item {
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 16px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .status-dropdown-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-dropdown-item:hover {
+            opacity: 0.8;
+            transform: translateX(2px);
+        }
+
+        .status-dropdown-item.item-created {
+            background: #fee;
+            color: #c33;
+        }
+
+        .status-dropdown-item.item-inprogress {
+            background: #ffeaa7;
+            color: #b8860b;
+        }
+
+        .status-dropdown-item.item-testing {
+            background: #dfe6ff;
+            color: #4355db;
+        }
+
+        .status-dropdown-item.item-verifying {
+            background: #e9dcff;
+            color: #7c3aed;
+        }
+
+        .status-dropdown-item.item-closed {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .rail-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .rail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            padding-top: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .detail-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: #1a1d24;
+        }
+
+        .comment-thread {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 2px solid #e5e5e7;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .comment-thread .detail-label {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0;
+            color: #1a1d24;
+            flex-shrink: 0;
+        }
+
+        .comments-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            min-height: 0;
+        }
+
+        .comment {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: #f9f9fb;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .comment-author {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1d24;
+        }
+
+        .comment-date {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .comment-body {
+            font-size: 13px;
+            color: #1a1d24;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .comment-input-wrapper {
+            padding: 12px;
+            background: #f9f9fb;
+            border-radius: 8px;
+            border: 1.5px solid #e5e5e7;
+            flex-shrink: 0;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #d1d1d6;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+
+        .comment-actions .btn {
+            font-size: 13px;
+        }
+
+        .timeline-item {
+            padding: 12px;
+            background: #f0fdf4;
+            border-left: 3px solid #10b981;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .timeline-icon {
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #059669;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #666;
+            margin-left: auto;
+        }
+
+        .timeline-body {
+            font-size: 13px;
+            color: #666;
+            margin-left: 28px;
+        }
+
+        .linked-test-case {
+            margin-top: 6px;
+        }
+
+        .linked-test-case-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1a1d24;
+            font-size: 13px;
+        }
+
+        .linked-test-case-info a {
+            color: #6366f1;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .linked-test-case-info a:hover {
+            text-decoration: underline;
+        }
+
+        .test-case-icon {
+            font-size: 16px;
+            filter: grayscale(100%) opacity(0.6);
+        }
+
+        /* Status Config Modal */
+        .status-config-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .status-config-modal.open {
+            display: flex;
+        }
+
+        .status-config-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 500px;
+            max-height: 80vh;
+            overflow: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .status-config-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-config-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1d24;
+        }
+
+        .status-config-body {
+            padding: 24px;
+        }
+
+        .status-list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #f9f9fb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+
+        .status-list-item.dragging {
+            opacity: 0.5;
+        }
+
+        .status-list-item.drag-over {
+            background: #e8e8f0;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: #999;
+            font-size: 16px;
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .status-list-item .status {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .status-list-item .status [contenteditable] {
+            padding: 2px 6px;
+            margin: -2px -6px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+
+        .status-list-item .status [contenteditable]:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .status-list-item .status [contenteditable]:focus {
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 20px;
+            line-height: 1;
+            color: #999;
+            transition: color 0.2s;
+            font-weight: 400;
+        }
+
+        .icon-btn:hover {
+            color: #ef4444;
+        }
+
+        .add-status-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #d1d1d6;
+            background: #fff;
+            border-radius: 8px;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .add-status-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .sort-dropdown {
+            padding: 8px 12px;
+            border: 1px solid #d1d1d6;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .settings-icon {
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            filter: grayscale(100%) opacity(0.6);
+            transition: filter 0.2s;
+        }
+
+        .settings-icon:hover {
+            filter: grayscale(100%) opacity(1);
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 600px;
+            max-height: 80vh;
+            overflow: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1d24;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .modal-close:hover {
+            background: #f5f5f7;
+        }
+
+        .modal-body {
+            padding: 24px 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1d24;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #d1d1d6;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: #fff;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            border-top: 1px solid #e5e5e7;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+            margin-top: 8px;
+            max-width: 280px;
+        }
+
+        .color-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            transition: all 0.15s;
+            opacity: 0.7;
+        }
+
+        .color-option:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .color-option.selected {
+            opacity: 1;
+            border-color: #1a1d24;
+            box-shadow: 0 0 0 1px #fff, 0 0 0 2px #1a1d24;
+        }
+
+        .column-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .column-type-option {
+            padding: 16px;
+            border: 2px solid #e5e5e7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .column-type-option:hover {
+            border-color: #6366f1;
+            background: #f9fafb;
+        }
+
+        .column-type-option.selected {
+            border-color: #6366f1;
+            background: #eff6ff;
+        }
+
+        .column-type-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .column-type-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1d24;
+        }
+
+        .custom-column-header {
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .custom-column-header:hover {
+            background: #f0f0f2;
+        }
+
+        th.custom-column-header > span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .column-edit-icon {
+            margin-left: 6px;
+            font-size: 12px;
+            color: #999;
+            opacity: 0;
+            transition: opacity 0.2s;
+            filter: grayscale(100%);
+        }
+
+        th.custom-column-header:hover .column-edit-icon {
+            opacity: 0.6;
+        }
+
+        td[data-column-type] {
+            min-width: 100px;
+        }
+
+        td[data-column-type]:hover {
+            background: #f9fafb;
+        }
+
+        td[data-column-type]:empty::before {
+            content: '';
+            display: block;
+            min-height: 20px;
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            border-top: 1px solid #f0f0f2;
+            background: #fff;
+        }
+
+        .pagination-info {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .pagination-btn {
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #999;
+            transition: all 0.15s;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f5f5f7;
+            color: #666;
+        }
+
+        .pagination-btn.active {
+            background: #f0f0f2;
+            color: #1a1d24;
+            font-weight: 500;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-ellipsis {
+            padding: 4px 6px;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .filtered-hidden,
+        .page-hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <span>🎯</span> CRESTA
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-item">📊 Insights</div>
+            <div class="nav-item sub">Performance</div>
+            <div class="nav-item sub">Assistance</div>
+            <div class="nav-item sub">Leaderboard</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-item">🤖 AI Agent</div>
+            <div class="nav-item sub">Performance</div>
+            <div class="nav-item sub active">Feedback Manager</div>
+            <div class="nav-item sub">Quality Review</div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-item">💬 Conversations</div>
+            <div class="nav-item sub">Agent Ops Center</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1 class="header-title">AI Feedback Manager</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="openNewFeedbackModal()">+ New Feedback</button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="tabs">
+                <div class="tab active">Active</div>
+                <div class="tab">Closed</div>
+                <div class="tab">All</div>
+            </div>
+
+            <div class="filters">
+                <input type="text" class="search-input" placeholder="Search feedback..." />
+                <div class="filter-group">
+                    <label class="filter-label">Review Status:</label>
+                    <select class="filter-select" id="reviewedFilter" onchange="handleReviewedFilter(this)">
+                        <option value="all">All Items</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="unreviewed">Unreviewed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Date:</label>
+                    <select class="filter-select" id="dateFilter" onchange="handleDateFilter(this)">
+                        <option value="all">All time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This week</option>
+                        <option value="month">This month</option>
+                        <option value="custom">Custom range...</option>
+                    </select>
+                </div>
+                <input type="date" class="filter-select" id="customDateStart" style="display: none;" placeholder="Start date">
+                <input type="date" class="filter-select" id="customDateEnd" style="display: none;" placeholder="End date">
+            </div>
+
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="sortable" id="statusHeader" style="width: 140px; position: relative;">
+                                Status
+                                <span class="settings-icon" onclick="event.stopPropagation(); openStatusConfig()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.4; filter: grayscale(100%);">✏️</span>
+                            </th>
+                            <th>Title</th>
+                            <th style="width: 200px;">Reporter</th>
+                            <th style="width: 180px; position: relative;" id="agentHeader">
+                                AI Agent
+                                <span class="settings-icon" onclick="event.stopPropagation(); toggleAgentFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.7; cursor: pointer; font-size: 14px; color: #666;">▾</span>
+                                <div class="agent-filter-dropdown" id="agentFilterDropdown">
+                                    <div class="agent-filter-option" onclick="filterByAgent('all')">
+                                        <span>All Agents</span>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="sortable" id="createdHeader" style="width: 110px;">Created</th>
+                            <th style="width: 180px;">Actions</th>
+                            <th style="width: 40px; text-align: center;"><span class="settings-icon" id="addColumnIcon" style="cursor: pointer; font-size: 18px;">+</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="feedback-row" data-id="1" data-priority="p0">
+                            <td>
+                                <div class="status-wrapper">
+                                    <span class="status status-inprogress">
+                                        <span class="status-dot dot-inprogress"></span>
+                                        In Progress
+                                    </span>
+                                    <span class="reviewed-badge" style="display: inline-flex;" title="Reviewed"></span>
+                                    <div class="status-picker">
+                                        <div class="status-option" data-status="created">
+                                            <span class="status-dot dot-created"></span> Created
+                                        </div>
+                                        <div class="status-option" data-status="inprogress">
+                                            <span class="status-dot dot-inprogress"></span> In Progress
+                                        </div>
+                                        <div class="status-option" data-status="testing">
+                                            <span class="status-dot dot-testing"></span> Testing
+                                        </div>
+                                        <div class="status-option" data-status="verifying">
+                                            <span class="status-dot dot-verifying"></span> Verifying
+                                        </div>
+                                        <div class="status-option" data-status="closed">
+                                            <span class="status-dot dot-closed"></span> Closed
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-p0"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="1">Agent picks wrong product SKU</a></td>
+                            <td class="email">manisha.ponniah@cresta.ai</td>
+                            <td>Guitar Center Voice Agent</td>
+                            <td style="white-space: nowrap;">04/18/2026</td>
+                            <td>
+                                <div class="actions">
+                                    <span class="test-tube-icon blue" title="Test case created">🧪</span>
+                                    <span class="ticket-icon grey" title="Create ticket">📋</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="feedback-row" data-id="2" data-priority="p2">
+                            <td>
+                                <div class="status-wrapper">
+                                    <span class="status status-created">
+                                        <span class="status-dot dot-created"></span>
+                                        Created
+                                    </span>
+                                    <span class="reviewed-badge" style="display: none;" title=""></span>
+                                    <div class="status-picker">
+                                        <div class="status-option" data-status="created">
+                                            <span class="status-dot dot-created"></span> Created
+                                        </div>
+                                        <div class="status-option" data-status="inprogress">
+                                            <span class="status-dot dot-inprogress"></span> In Progress
+                                        </div>
+                                        <div class="status-option" data-status="testing">
+                                            <span class="status-dot dot-testing"></span> Testing
+                                        </div>
+                                        <div class="status-option" data-status="verifying">
+                                            <span class="status-dot dot-verifying"></span> Verifying
+                                        </div>
+                                        <div class="status-option" data-status="closed">
+                                            <span class="status-dot dot-closed"></span> Closed
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-p2"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="2">Tone sounds robotic in greetings</a></td>
+                            <td class="email">john.doe@cresta.ai</td>
+                            <td>Guitar Center Voice Agent</td>
+                            <td style="white-space: nowrap;">04/19/2026</td>
+                            <td>
+                                <div class="actions">
+                                    <span class="test-tube-icon grey" title="Create test case">🧪</span>
+                                    <span class="ticket-icon grey" title="Create ticket">📋</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="feedback-row" data-id="3" data-priority="p1">
+                            <td>
+                                <div class="status-wrapper">
+                                    <span class="status status-inprogress">
+                                        <span class="status-dot dot-inprogress"></span>
+                                        In Progress
+                                    </span>
+                                    <span class="reviewed-badge" style="display: none;" title=""></span>
+                                    <div class="status-picker">
+                                        <div class="status-option" data-status="created">
+                                            <span class="status-dot dot-created"></span> Created
+                                        </div>
+                                        <div class="status-option" data-status="inprogress">
+                                            <span class="status-dot dot-inprogress"></span> In Progress
+                                        </div>
+                                        <div class="status-option" data-status="testing">
+                                            <span class="status-dot dot-testing"></span> Testing
+                                        </div>
+                                        <div class="status-option" data-status="verifying">
+                                            <span class="status-dot dot-verifying"></span> Verifying
+                                        </div>
+                                        <div class="status-option" data-status="closed">
+                                            <span class="status-dot dot-closed"></span> Closed
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-p1"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="3">Missing context on pricing</a></td>
+                            <td class="email">sarah.jones@cresta.ai</td>
+                            <td>Guitar Center Voice Agent</td>
+                            <td style="white-space: nowrap;">04/17/2026</td>
+                            <td>
+                                <div class="actions">
+                                    <span class="test-tube-icon grey" title="Create test case">🧪</span>
+                                    <span class="ticket-icon grey" title="Create ticket">📋</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="feedback-row" data-id="4" data-priority="p2">
+                            <td>
+                                <div class="status-wrapper">
+                                    <span class="status status-testing">
+                                        <span class="status-dot dot-testing"></span>
+                                        Testing
+                                    </span>
+                                    <span class="reviewed-badge" style="display: none;" title=""></span>
+                                    <div class="status-picker">
+                                        <div class="status-option" data-status="created">
+                                            <span class="status-dot dot-created"></span> Created
+                                        </div>
+                                        <div class="status-option" data-status="inprogress">
+                                            <span class="status-dot dot-inprogress"></span> In Progress
+                                        </div>
+                                        <div class="status-option" data-status="testing">
+                                            <span class="status-dot dot-testing"></span> Testing
+                                        </div>
+                                        <div class="status-option" data-status="verifying">
+                                            <span class="status-dot dot-verifying"></span> Verifying
+                                        </div>
+                                        <div class="status-option" data-status="closed">
+                                            <span class="status-dot dot-closed"></span> Closed
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-p2"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="4">Escalation trigger too sensitive</a></td>
+                            <td class="email">mike.chen@cresta.ai</td>
+                            <td>Guitar Center Voice Agent</td>
+                            <td style="white-space: nowrap;">04/16/2026</td>
+                            <td>
+                                <div class="actions">
+                                    <span class="test-tube-icon grey" title="Create test case">🧪</span>
+                                    <span class="ticket-icon grey" title="Create ticket">📋</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="feedback-row" data-id="5" data-priority="p3">
+                            <td>
+                                <div class="status-wrapper">
+                                    <span class="status status-closed">
+                                        <span class="status-dot dot-closed"></span>
+                                        Closed
+                                    </span>
+                                    <span class="reviewed-badge" style="display: none;" title=""></span>
+                                    <div class="status-picker">
+                                        <div class="status-option" data-status="created">
+                                            <span class="status-dot dot-created"></span> Created
+                                        </div>
+                                        <div class="status-option" data-status="inprogress">
+                                            <span class="status-dot dot-inprogress"></span> In Progress
+                                        </div>
+                                        <div class="status-option" data-status="testing">
+                                            <span class="status-dot dot-testing"></span> Testing
+                                        </div>
+                                        <div class="status-option" data-status="verifying">
+                                            <span class="status-dot dot-verifying"></span> Verifying
+                                        </div>
+                                        <div class="status-option" data-status="closed">
+                                            <span class="status-dot dot-closed"></span> Closed
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-p3"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="5">Incorrect hours of operation</a></td>
+                            <td class="email">amy.park@cresta.ai</td>
+                            <td>Guitar Center Voice Agent</td>
+                            <td style="white-space: nowrap;">04/15/2026</td>
+                            <td>
+                                <div class="actions">
+                                    <span class="test-tube-icon blue" title="Test case created">🧪</span>
+                                    <span class="ticket-icon grey" title="Create ticket">📋</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="feedback-row" data-id="6" data-priority="p3">
+                            <td>
+                                <div class="status-wrapper">
+                                    <span class="status status-created">
+                                        <span class="status-dot dot-created"></span>
+                                        Created
+                                    </span>
+                                    <span class="reviewed-badge" style="display: none;" title=""></span>
+                                    <div class="status-picker">
+                                        <div class="status-option" data-status="created">
+                                            <span class="status-dot dot-created"></span> Created
+                                        </div>
+                                        <div class="status-option" data-status="inprogress">
+                                            <span class="status-dot dot-inprogress"></span> In Progress
+                                        </div>
+                                        <div class="status-option" data-status="testing">
+                                            <span class="status-dot dot-testing"></span> Testing
+                                        </div>
+                                        <div class="status-option" data-status="verifying">
+                                            <span class="status-dot dot-verifying"></span> Verifying
+                                        </div>
+                                        <div class="status-option" data-status="closed">
+                                            <span class="status-dot dot-closed"></span> Closed
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-p3"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="6">Agent repeats customer question</a></td>
+                            <td class="email">james.wilson@cresta.ai</td>
+                            <td>Guitar Center Voice Agent</td>
+                            <td style="white-space: nowrap;">04/20/2026</td>
+                            <td>
+                                <div class="actions">
+                                    <span class="test-tube-icon grey" title="Create test case">🧪</span>
+                                    <span class="ticket-icon grey" title="Create ticket">📋</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="feedback-row" data-id="7" data-priority="p1">
+                            <td>
+                                <div class="status-wrapper">
+                                    <span class="status status-created">
+                                        <span class="status-dot dot-created"></span>
+                                        Created
+                                    </span>
+                                    <span class="reviewed-badge" style="display: none;" title=""></span>
+                                    <div class="status-picker">
+                                        <div class="status-option" data-status="created">
+                                            <span class="status-dot dot-created"></span> Created
+                                        </div>
+                                        <div class="status-option" data-status="inprogress">
+                                            <span class="status-dot dot-inprogress"></span> In Progress
+                                        </div>
+                                        <div class="status-option" data-status="testing">
+                                            <span class="status-dot dot-testing"></span> Testing
+                                        </div>
+                                        <div class="status-option" data-status="verifying">
+                                            <span class="status-dot dot-verifying"></span> Verifying
+                                        </div>
+                                        <div class="status-option" data-status="closed">
+                                            <span class="status-dot dot-closed"></span> Closed
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="priority-badge priority-p1"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="7">Agent provides incorrect pricing information</a></td>
+                            <td class="email">emily.davis@cresta.ai</td>
+                            <td>Retail Support Agent</td>
+                            <td style="white-space: nowrap;">04/27/2026</td>
+                            <td>
+                                <div class="actions">
+                                    <span class="test-tube-icon grey" title="Create test case">🧪</span>
+                                    <span class="ticket-icon grey" title="Create ticket">📋</span>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-container">
+                    <div class="pagination-info" id="paginationInfo">
+                        Showing 1-7 of 7
+                    </div>
+                    <div class="pagination" id="pagination">
+                        <button class="pagination-btn" id="prevBtn" onclick="changePage(-1)" disabled>‹</button>
+                        <button class="pagination-btn active" onclick="goToPage(1)">1</button>
+                        <button class="pagination-btn" id="nextBtn" onclick="changePage(1)" disabled>›</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Rail Backdrop -->
+    <div class="right-rail-backdrop" id="rightRailBackdrop" onclick="closeRail()"></div>
+
+    <!-- Right Rail -->
+    <div class="right-rail" id="rightRail">
+        <div class="rail-header">
+            <div class="rail-title" id="railTitle">Feedback Details</div>
+        </div>
+        <div class="rail-content">
+            <!-- Content will be dynamically populated -->
+        </div>
+    </div>
+
+    <!-- New Feedback Modal -->
+    <div class="modal" id="newFeedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Create New Feedback</div>
+                <button class="modal-close" onclick="closeNewFeedbackModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Title *</label>
+                    <input type="text" class="form-input" id="feedbackTitleInput" placeholder="Brief description of the issue">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">AI Agent *</label>
+                    <select class="form-select" id="feedbackAgentSelect">
+                        <option value="">Select an agent</option>
+                        <option>Guitar Center Voice Agent</option>
+                        <option>Retail Support Agent</option>
+                        <option>Customer Service Agent</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority *</label>
+                    <select class="form-select" id="feedbackPrioritySelect">
+                        <option value="">Select priority</option>
+                        <option value="p0">Urgent</option>
+                        <option value="p1">High</option>
+                        <option value="p2" selected>Medium</option>
+                        <option value="p3">Low</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Conversation ID (Optional)</label>
+                    <input type="text" class="form-input" placeholder="e.g., conv_123456789">
+                    <div class="form-hint">Link to a specific conversation where this issue occurred</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeNewFeedbackModal()">Cancel</button>
+                <button class="btn btn-primary" id="createFeedbackBtn" style="opacity: 0.5; cursor: not-allowed;" disabled onclick="alert('Would create new feedback item'); closeNewFeedbackModal();">Create Feedback</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Config Modal -->
+    <div class="status-config-modal" id="statusConfigModal">
+        <div class="status-config-content">
+            <div class="status-config-header">
+                <div class="status-config-title">Customize Statuses</div>
+                <button class="rail-close" onclick="closeStatusConfig()">×</button>
+            </div>
+            <div class="status-config-body">
+                <!-- Content will be dynamically populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.closeRail = function() {
+            document.getElementById('rightRail').classList.remove('open');
+            document.getElementById('rightRailBackdrop').classList.remove('open');
+        };
+
+        // Global variable to track current feedback item
+        let currentFeedbackId = null;
+
+        // Reviewed status tracking
+        let reviewedItems = {
+            '1': { reviewedBy: 'Sarah Chen', reviewedAt: 'Apr 26, 2026, 3:45 PM' }
+        }; // { feedbackId: { reviewedBy: 'name', reviewedAt: timestamp } }
+
+        // Custom statuses storage
+        let customStatuses = [];
+        let isAddingStatus = false;
+
+        // Default statuses
+        const defaultStatuses = [
+            { name: 'Created', key: 'created', color: '#ef4444' },
+            { name: 'In Progress', key: 'inprogress', color: '#eab308' },
+            { name: 'Testing', key: 'testing', color: '#3b82f6' },
+            { name: 'Verifying', key: 'verifying', color: '#a855f7' },
+            { name: 'Closed', key: 'closed', color: '#10b981' }
+        ];
+
+        window.showAddStatusForm = function() {
+            // Check if we've reached the max limit of 10 statuses
+            const totalStatuses = defaultStatuses.length + customStatuses.length;
+            if (totalStatuses >= 10) {
+                alert('Maximum of 10 statuses allowed. Please delete an existing status to add a new one.');
+                return;
+            }
+
+            isAddingStatus = true;
+            refreshStatusConfigModal();
+
+            // Focus the input after the DOM updates
+            setTimeout(() => {
+                const input = document.getElementById('statusNameInput');
+                if (input) input.focus();
+            }, 0);
+        };
+
+        window.cancelAddStatus = function() {
+            isAddingStatus = false;
+            refreshStatusConfigModal();
+        };
+
+        window.addNewStatus = function() {
+            const statusName = document.getElementById('statusNameInput').value.trim();
+            const statusColor = document.getElementById('statusColorInput').value;
+
+            // Validate
+            if (!statusName) {
+                alert('Please enter a status name');
+                return;
+            }
+
+            // Check for duplicate names
+            const statusKey = statusName.replace(/\s+/g, '').toLowerCase();
+            const allStatuses = [...defaultStatuses, ...customStatuses];
+            if (allStatuses.some(s => s.key === statusKey)) {
+                alert('A status with this name already exists');
+                return;
+            }
+
+            // Add to custom statuses
+            customStatuses.push({
+                name: statusName,
+                key: statusKey,
+                color: statusColor
+            });
+
+            // Add dynamic CSS for the new status color
+            addStatusColorCSS(statusKey, statusColor);
+
+            // Reset and refresh
+            isAddingStatus = false;
+            refreshStatusConfigModal();
+        };
+
+        // Add CSS for custom status color
+        function addStatusColorCSS(statusKey, color) {
+            const styleId = `status-style-${statusKey}`;
+
+            // Remove existing style if it exists
+            const existingStyle = document.getElementById(styleId);
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+
+            // Add new style
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `.dot-${statusKey} { background: ${color}; }`;
+            document.head.appendChild(style);
+        }
+
+        // Refresh the status config modal with current statuses
+        function refreshStatusConfigModal() {
+            const statusConfigBody = document.querySelector('.status-config-body');
+            if (!statusConfigBody) return;
+
+            const allStatuses = [...defaultStatuses, ...customStatuses];
+
+            // Build the status list HTML
+            let statusListHTML = '<p style="color: #666; font-size: 14px; margin-bottom: 16px;">Drag to reorder, click names to edit, or add new statuses.</p>';
+
+            allStatuses.forEach((status, index) => {
+                const isDefault = index < defaultStatuses.length;
+                const deleteBtn = isDefault ?
+                    '<button class="icon-btn" style="opacity: 0.3; cursor: not-allowed;" title="Cannot delete default status">×</button>' :
+                    `<button class="icon-btn" onclick="deleteCustomStatus('${status.key}')" title="Delete status">×</button>`;
+
+                statusListHTML += `
+                    <div class="status-list-item" draggable="true" data-status-key="${status.key}" data-is-default="${isDefault}" ondragstart="handleDragStart(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragend="handleDragEnd(event)">
+                        <span class="drag-handle">⋮⋮</span>
+                        <span class="status status-${status.key}">
+                            <span class="status-dot dot-${status.key}"></span>
+                            <span contenteditable="true"
+                                  onblur="saveStatusName('${status.key}', this.textContent, ${isDefault})"
+                                  onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }"
+                                  onmousedown="event.stopPropagation();"
+                                  ondragstart="event.preventDefault(); return false;"
+                                  style="outline: none; cursor: text; user-select: text; -webkit-user-select: text;">${status.name}</span>
+                        </span>
+                        ${deleteBtn}
+                    </div>
+                `;
+            });
+
+            // Add inline form if adding a new status
+            if (isAddingStatus) {
+                statusListHTML += `
+                    <div style="background: #f9f9fb; border-radius: 8px; padding: 16px; margin-top: 12px;">
+                        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+                            <div style="flex: 1;">
+                                <input type="text" class="form-input" id="statusNameInput" placeholder="Status name" maxlength="30" onkeypress="if(event.key === 'Enter') addNewStatus()">
+                            </div>
+                            <div>
+                                <input type="color" id="statusColorInput" value="#6366f1" style="width: 50px; height: 41px; border: 1.5px solid #d1d1d6; border-radius: 6px; cursor: pointer; padding: 2px;">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" onclick="cancelAddStatus()" style="flex: 1;">Cancel</button>
+                            <button class="btn btn-primary" onclick="addNewStatus()" style="flex: 1;">Add Status</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusListHTML += `
+                    <button class="add-status-btn" onclick="showAddStatusForm()">+ Add Status</button>
+                `;
+            }
+
+            statusConfigBody.innerHTML = statusListHTML;
+        }
+
+        // Save edited status name
+        window.saveStatusName = function(statusKey, newName, isDefault) {
+            newName = newName.trim();
+
+            if (!newName) {
+                refreshStatusConfigModal();
+                return;
+            }
+
+            // Find the status in the appropriate array
+            let status;
+            if (isDefault) {
+                status = defaultStatuses.find(s => s.key === statusKey);
+            } else {
+                status = customStatuses.find(s => s.key === statusKey);
+            }
+
+            if (!status) return;
+
+            // Check if name changed
+            if (status.name === newName) return;
+
+            // Update the name
+            status.name = newName;
+
+            // No need to refresh, the change is already visible
+        };
+
+        // Delete custom status
+        window.deleteCustomStatus = function(statusKey) {
+            if (!confirm('Are you sure you want to delete this status?')) {
+                return;
+            }
+
+            // Remove from custom statuses array
+            customStatuses = customStatuses.filter(s => s.key !== statusKey);
+
+            // Remove the CSS
+            const styleEl = document.getElementById(`status-style-${statusKey}`);
+            if (styleEl) {
+                styleEl.remove();
+            }
+
+            // Refresh the modal
+            refreshStatusConfigModal();
+        };
+
+        // Drag and drop handlers for reordering statuses
+        let draggedStatusKey = null;
+
+        window.handleDragStart = function(event) {
+            draggedStatusKey = event.target.getAttribute('data-status-key');
+            event.target.classList.add('dragging');
+            event.dataTransfer.effectAllowed = 'move';
+        };
+
+        window.handleDragOver = function(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            const target = event.target.closest('.status-list-item');
+            if (target && !target.classList.contains('dragging')) {
+                target.classList.add('drag-over');
+            }
+        };
+
+        window.handleDrop = function(event) {
+            event.preventDefault();
+            const target = event.target.closest('.status-list-item');
+            if (!target || !draggedStatusKey) return;
+
+            const targetStatusKey = target.getAttribute('data-status-key');
+            if (draggedStatusKey === targetStatusKey) return;
+
+            // Get all statuses
+            const allStatuses = [...defaultStatuses, ...customStatuses];
+
+            // Find indices
+            const draggedIndex = allStatuses.findIndex(s => s.key === draggedStatusKey);
+            const targetIndex = allStatuses.findIndex(s => s.key === targetStatusKey);
+
+            if (draggedIndex === -1 || targetIndex === -1) return;
+
+            // Check if trying to reorder default statuses with custom or vice versa
+            const isDraggedDefault = draggedIndex < defaultStatuses.length;
+            const isTargetDefault = targetIndex < defaultStatuses.length;
+
+            if (isDraggedDefault !== isTargetDefault) {
+                // Can't mix default and custom statuses
+                return;
+            }
+
+            // Reorder within the appropriate array
+            if (isDraggedDefault) {
+                // Reorder default statuses
+                const [removed] = defaultStatuses.splice(draggedIndex, 1);
+                defaultStatuses.splice(targetIndex, 0, removed);
+            } else {
+                // Reorder custom statuses
+                const draggedCustomIndex = draggedIndex - defaultStatuses.length;
+                const targetCustomIndex = targetIndex - defaultStatuses.length;
+                const [removed] = customStatuses.splice(draggedCustomIndex, 1);
+                customStatuses.splice(targetCustomIndex, 0, removed);
+            }
+
+            // Refresh the modal
+            refreshStatusConfigModal();
+        };
+
+        window.handleDragEnd = function(event) {
+            event.target.classList.remove('dragging');
+            document.querySelectorAll('.status-list-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            draggedStatusKey = null;
+        };
+
+        // Generate status dropdown menu HTML
+        function generateStatusDropdownHTML() {
+            const allStatuses = [...defaultStatuses, ...customStatuses];
+            return allStatuses.map(status => `
+                <div class="status-dropdown-item item-${status.key}" onclick="changeStatus('${status.key}'); event.stopPropagation();">
+                    <span class="status-dot dot-${status.key}"></span>
+                    ${status.name}
+                </div>
+            `).join('');
+        }
+
+        // Function to change status
+        window.changeStatus = function(newStatusKey) {
+            if (!currentFeedbackId) return;
+
+            // Find the status object from all statuses
+            const allStatuses = [...defaultStatuses, ...customStatuses];
+            const statusObj = allStatuses.find(s => s.key === newStatusKey);
+            if (!statusObj) return;
+
+            const statusClass = 'status-' + statusObj.key;
+            const dotClass = 'dot-' + statusObj.key;
+            const statusDisplay = statusObj.name;
+
+            // Update the table row
+            const row = document.querySelector(`tr.feedback-row[data-id="${currentFeedbackId}"]`);
+            if (row) {
+                const statusPill = row.querySelector('.status');
+                const statusWrapper = row.querySelector('.status-wrapper');
+
+                // Remove old status classes
+                statusPill.className = 'status ' + statusClass;
+
+                // Update content
+                statusPill.innerHTML = `
+                    <span class="status-dot ${dotClass}"></span>
+                    ${statusDisplay}
+                `;
+            }
+
+            // Update the detail view
+            const railContent = document.querySelector('.rail-content');
+            const statusPillInRail = railContent.querySelector('.status-dropdown-custom .status');
+            if (statusPillInRail) {
+                statusPillInRail.className = 'status ' + statusClass;
+                statusPillInRail.style.cssText = 'cursor: pointer;';
+                statusPillInRail.innerHTML = `
+                    <span class="status-dot ${dotClass}"></span>
+                    ${statusDisplay}
+                `;
+
+                // Update timestamp
+                const now = new Date();
+                const timeString = now.toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                const timestampDiv = railContent.querySelector('.detail-value > div[style*="font-size: 11px"]');
+                if (timestampDiv) {
+                    timestampDiv.textContent = `Changed ${timeString}`;
+                }
+            }
+        };
+
+        // Toggle reviewed status
+        window.toggleReviewed = function(feedbackId) {
+            const isReviewed = reviewedItems[feedbackId];
+
+            if (isReviewed) {
+                // Unmark as reviewed
+                delete reviewedItems[feedbackId];
+            } else {
+                // Mark as reviewed
+                const now = new Date();
+                reviewedItems[feedbackId] = {
+                    reviewedBy: 'You', // In real app, this would be current user's name/email
+                    reviewedAt: now.toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    })
+                };
+            }
+
+            // Update the badge in the table
+            const row = document.querySelector(`tr.feedback-row[data-id="${feedbackId}"]`);
+            if (row) {
+                const badge = row.querySelector('.reviewed-badge');
+                if (badge) {
+                    if (reviewedItems[feedbackId]) {
+                        badge.style.display = 'inline-flex';
+                        badge.title = 'Reviewed';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+
+            // Refresh the detail panel if it's open for this item
+            if (currentFeedbackId === feedbackId) {
+                const reviewedDiv = document.getElementById('reviewedIndicator');
+                if (reviewedDiv) {
+                    if (reviewedItems[feedbackId]) {
+                        reviewedDiv.style.color = '#666';
+                        reviewedDiv.style.cursor = 'pointer';
+                        reviewedDiv.innerHTML = `✓ Reviewed by ${reviewedItems[feedbackId].reviewedBy} on ${reviewedItems[feedbackId].reviewedAt}`;
+                    } else {
+                        reviewedDiv.style.color = '';
+                        reviewedDiv.style.cursor = '';
+                        reviewedDiv.innerHTML = `<a href="#" onclick="toggleReviewed(${feedbackId}); return false;" style="color: #6366f1; text-decoration: none;">Mark as reviewed</a>`;
+                    }
+                }
+            }
+        };
+
+        // Update priority function
+        window.updatePriority = function(feedbackId, newPriority) {
+            console.log('Updating priority for feedback', feedbackId, 'to', newPriority);
+
+            // Update the row's data-priority attribute
+            const row = document.querySelector(`tr.feedback-row[data-id="${feedbackId}"]`);
+            if (row) {
+                row.setAttribute('data-priority', newPriority);
+
+                // Update the priority badge in the title cell
+                const titleCell = row.querySelector('.title-link').closest('td');
+                const existingBadge = titleCell.querySelector('.priority-badge');
+
+                if (existingBadge) {
+                    // Update existing badge
+                    existingBadge.className = `priority-badge priority-${newPriority}`;
+                    existingBadge.innerHTML = '<span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>';
+                }
+            }
+
+            // In a real app, this would save to backend
+            console.log('Priority updated successfully');
+        };
+
+        // Agent filter functionality
+        let currentAgentFilter = 'all';
+
+        // Populate agent filter dropdown with unique agents from the table
+        function populateAgentFilter() {
+            const dropdown = document.getElementById('agentFilterDropdown');
+            if (!dropdown) return;
+
+            // Get all unique agents from the table
+            const rows = document.querySelectorAll('.feedback-row');
+            const agents = new Set();
+
+            rows.forEach(row => {
+                const agentCell = row.cells[3]; // AI Agent is the 4th column (index 3)
+                if (agentCell) {
+                    const agentName = agentCell.textContent.trim();
+                    if (agentName) {
+                        agents.add(agentName);
+                    }
+                }
+            });
+
+            // Build dropdown HTML
+            let html = '<div class="agent-filter-option' + (currentAgentFilter === 'all' ? ' selected' : '') + '" onclick="filterByAgent(\'all\'); event.stopPropagation();">';
+            html += '<span>All Agents</span>';
+            html += '</div>';
+
+            // Sort agents alphabetically
+            const sortedAgents = Array.from(agents).sort();
+            sortedAgents.forEach(agent => {
+                const isSelected = currentAgentFilter === agent ? ' selected' : '';
+                html += '<div class="agent-filter-option' + isSelected + '" onclick="filterByAgent(\'' + agent.replace(/'/g, "\\'") + '\'); event.stopPropagation();">';
+                html += '<span>' + agent + '</span>';
+                html += '</div>';
+            });
+
+            dropdown.innerHTML = html;
+        }
+
+        // Toggle agent filter dropdown
+        window.toggleAgentFilter = function() {
+            const dropdown = document.getElementById('agentFilterDropdown');
+            if (!dropdown) return;
+
+            // Close any open status pickers
+            document.querySelectorAll('.status-picker.open').forEach(p => {
+                p.classList.remove('open');
+            });
+
+            // Populate the dropdown before opening
+            populateAgentFilter();
+
+            // Toggle this dropdown
+            dropdown.classList.toggle('open');
+        };
+
+        // Filter table by agent
+        window.filterByAgent = function(agent) {
+            currentAgentFilter = agent;
+
+            const rows = document.querySelectorAll('.feedback-row');
+            rows.forEach(row => {
+                const agentCell = row.cells[3]; // AI Agent is the 4th column (index 3)
+                if (!agentCell) return;
+
+                const agentName = agentCell.textContent.trim();
+
+                if (agent === 'all' || agentName === agent) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Close the dropdown
+            const dropdown = document.getElementById('agentFilterDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('open');
+            }
+
+            // Update the filter icon to show active filter
+            updateAgentFilterIcon();
+        };
+
+        // Update the filter icon to show if a filter is active
+        function updateAgentFilterIcon() {
+            const header = document.getElementById('agentHeader');
+            if (!header) return;
+
+            const icon = header.querySelector('.settings-icon');
+            if (!icon) return;
+
+            if (currentAgentFilter === 'all') {
+                icon.style.opacity = '0.7';
+                icon.textContent = '▾';
+                icon.style.color = '#666';
+            } else {
+                icon.style.opacity = '1';
+                icon.textContent = '▾';
+                icon.style.color = '#3b82f6';
+            }
+        }
+
+        window.openRail = function(title, status, reporter, agent, created, feedbackId, priority = 'p2') {
+            console.log('openRail called with:', title, status);
+            currentFeedbackId = feedbackId;
+            const rail = document.getElementById('rightRail');
+            const railTitle = document.getElementById('railTitle');
+            const railContent = document.querySelector('.rail-content');
+
+            if (railTitle) {
+                railTitle.textContent = 'Feedback Details';
+            }
+
+            // Build the content dynamically
+            const statusKey = status.replace(/\s+/g, '').toLowerCase();
+            const statusClass = 'status-' + statusKey;
+            const dotClass = 'dot-' + statusKey;
+
+            // Try to find the status in our statuses array, otherwise capitalize properly
+            const allStatuses = [...defaultStatuses, ...customStatuses];
+            const statusObj = allStatuses.find(s => s.key === statusKey);
+            const statusDisplay = statusObj ? statusObj.name : status.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+            // Format created date (convert MM/DD/YYYY to readable format)
+            const dateParts = created.split('/');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const formattedDate = `${months[parseInt(dateParts[0]) - 1]} ${dateParts[1]}, ${dateParts[2]} at 2:34 PM`;
+
+            let closedTimestamp = '';
+            if (status === 'closed') {
+                closedTimestamp = `<div style="font-size: 11px; color: #666; margin-top: 4px;">Closed on Apr 20, 2026 at 4:15 PM</div>`;
+            }
+
+            // Check if already reviewed
+            const isReviewed = reviewedItems[feedbackId];
+            const reviewedIndicator = isReviewed
+                ? `<div id="reviewedIndicator" style="font-size: 11px; color: #666; margin-top: 12px; cursor: pointer;" onclick="toggleReviewed(${feedbackId})">✓ Reviewed by ${isReviewed.reviewedBy} on ${isReviewed.reviewedAt}</div>`
+                : `<div id="reviewedIndicator" style="font-size: 11px; margin-top: 12px;"><a href="#" onclick="toggleReviewed(${feedbackId}); return false;" style="color: #6366f1; text-decoration: none;">Mark as reviewed</a></div>`;
+
+            // Priority labels
+            const priorityLabels = {
+                'p0': 'P0 - Critical',
+                'p1': 'P1 - High',
+                'p2': 'P2 - Medium',
+                'p3': 'P3 - Low'
+            };
+
+            railContent.innerHTML = `
+                <input type="text" class="editable-title" id="feedbackTitle" value="${title}" placeholder="Feedback title" onblur="alert('Would save title: ' + this.value)">
+
+                <div class="detail-section">
+                    <div class="detail-label">Status</div>
+                    <div class="detail-value">
+                        <div class="status-dropdown-custom">
+                            <div class="status ${statusClass}" style="cursor: pointer;">
+                                <span class="status-dot ${dotClass}"></span>
+                                ${statusDisplay}
+                            </div>
+                            <div class="status-dropdown-menu">
+                                ${generateStatusDropdownHTML()}
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Changed Apr 19, 10:22 AM</div>
+                        ${reviewedIndicator}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">Priority</div>
+                    <div class="detail-value">
+                        <select class="form-select" id="prioritySelect" onchange="updatePriority(${feedbackId}, this.value)" style="width: 100%; padding: 7px 10px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;">
+                            <option value="p0" ${priority === 'p0' ? 'selected' : ''}>P0 - Critical</option>
+                            <option value="p1" ${priority === 'p1' ? 'selected' : ''}>P1 - High</option>
+                            <option value="p2" ${priority === 'p2' ? 'selected' : ''}>P2 - Medium</option>
+                            <option value="p3" ${priority === 'p3' ? 'selected' : ''}>P3 - Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">Linked Test Case</div>
+                    ${status === 'closed' || status === 'in progress' ? `
+                        <div class="linked-test-case">
+                            <div class="linked-test-case-info">
+                                <a href="#" onclick="alert('Would navigate to test case'); return false;">${title}</a>
+                            </div>
+                        </div>
+                    ` : '<div class="detail-value"><a href="#" onclick="alert(\'Would open create test case modal\'); return false;" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500;">Create</a></div>'}
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-label">Ticket</div>
+                    <div class="detail-value" id="ticketSection">
+                        <a href="#" onclick="createLinearTicket(); return false;" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500;">Create Linear ticket</a>
+
+                        <div style="margin-top: 12px;">
+                            <label style="font-size: 11px; color: #999; display: block; margin-bottom: 6px;">External ticket URL</label>
+                            <input type="text" id="externalTicketUrl" placeholder="Paste link..." style="width: 100%; padding: 7px 10px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment-thread">
+                    <div class="detail-label">Activity</div>
+
+                    <div class="comments-list">
+                        <div class="comment">
+                            <div class="comment-header">
+                                <span class="comment-author">john.doe@cresta.ai</span>
+                                <span class="comment-date">Apr 18, 2026 3:15 PM</span>
+                            </div>
+                            <div class="comment-body">
+                                ${status === 'closed' ? 'Verified the fix is working correctly in production.' : 'I\'ve seen this happen 3 times today alone. Always with the "Pro" and "Pro Plus" products.'}
+                            </div>
+                        </div>
+
+                        <div class="comment">
+                            <div class="comment-header">
+                                <span class="comment-author">sarah.jones@cresta.ai</span>
+                                <span class="comment-date">Apr 19, 2026 10:22 AM</span>
+                            </div>
+                            <div class="comment-body">
+                                ${status === 'closed' ? 'Deployed the fix and moving this to closed.' : 'Created a test case to reproduce this. Moving to In Progress.'}
+                            </div>
+                        </div>
+
+                        <div class="comment">
+                            <div class="comment-header">
+                                <span class="comment-author">mike.chen@cresta.ai</span>
+                                <span class="comment-date">Apr 20, 2026 9:00 AM</span>
+                            </div>
+                            <div class="comment-body">
+                                Adding some additional context here about the issue.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comment-input-wrapper">
+                        <textarea class="comment-input" id="mainCommentInput" placeholder="Add a comment..."></textarea>
+                        <div class="comment-actions">
+                            <button class="btn" style="padding: 6px 12px; font-size: 13px;">Cancel</button>
+                            <button class="btn" id="postCommentBtn" style="padding: 6px 12px; font-size: 13px; opacity: 0.5; cursor: not-allowed;" disabled>Post Comment</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            rail.classList.add('open');
+            document.getElementById('rightRailBackdrop').classList.add('open');
+
+            // Setup comment input listener for main comment
+            setTimeout(() => {
+                // Initialize ticket section
+                updateTicketSection();
+
+                const mainCommentInput = document.getElementById('mainCommentInput');
+                const postCommentBtn = document.getElementById('postCommentBtn');
+
+                if (mainCommentInput && postCommentBtn) {
+                    mainCommentInput.addEventListener('input', function() {
+                        if (this.value.trim().length > 0) {
+                            postCommentBtn.disabled = false;
+                            postCommentBtn.style.opacity = '1';
+                            postCommentBtn.style.cursor = 'pointer';
+                            postCommentBtn.style.background = '#1a1d24';
+                            postCommentBtn.style.color = '#fff';
+                            postCommentBtn.style.borderColor = '#1a1d24';
+                        } else {
+                            postCommentBtn.disabled = true;
+                            postCommentBtn.style.opacity = '0.5';
+                            postCommentBtn.style.cursor = 'not-allowed';
+                            postCommentBtn.style.background = '#fff';
+                            postCommentBtn.style.color = '#666';
+                            postCommentBtn.style.borderColor = '#d1d1d6';
+                        }
+                    });
+                }
+            }, 100);
+        }
+
+        // Setup all event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded - setting up event listeners');
+
+            // Open right rail when clicking title
+            document.querySelectorAll('.title-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    console.log('Title link clicked');
+                    e.preventDefault();
+                    const row = link.closest('tr');
+                    const feedbackId = row.getAttribute('data-id');
+                    const priority = row.getAttribute('data-priority') || 'p2';
+                    const status = row.querySelector('.status').textContent.trim().toLowerCase();
+                    const reporter = row.querySelectorAll('td')[2].textContent.trim();
+                    const agent = row.querySelectorAll('td')[3].textContent.trim();
+                    const created = row.querySelectorAll('td')[4].textContent.trim();
+                    openRail(link.textContent, status, reporter, agent, created, feedbackId, priority);
+                });
+            });
+
+            // Open right rail when clicking row
+            document.querySelectorAll('.feedback-row').forEach(row => {
+                row.addEventListener('click', (e) => {
+                    console.log('Row clicked', e.target);
+                    // Don't open rail if clicking on status, action buttons, or dropdowns
+                    if (!e.target.classList.contains('action-btn') &&
+                        !e.target.closest('.action-btn') &&
+                        !e.target.closest('.status-wrapper') &&
+                        !e.target.closest('.dropdown')) {
+                        console.log('Opening rail from row click');
+                        const feedbackId = row.getAttribute('data-id');
+                        const priority = row.getAttribute('data-priority') || 'p2';
+                        const title = row.querySelector('.title-link').textContent;
+                        const status = row.querySelector('.status').textContent.trim().toLowerCase();
+                        const reporter = row.querySelectorAll('td')[2].textContent.trim();
+                        const agent = row.querySelectorAll('td')[3].textContent.trim();
+                        const created = row.querySelectorAll('td')[4].textContent.trim();
+                        openRail(title, status, reporter, agent, created, feedbackId, priority);
+                    } else {
+                        console.log('Row click ignored - clicked on excluded element');
+                    }
+                });
+            });
+
+            // Handle test tube icon clicks
+            document.querySelectorAll('.test-tube-icon').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (icon.classList.contains('blue')) {
+                        // Open test case in new tab (placeholder URL)
+                        window.open('https://example.com/test-case', '_blank');
+                    } else {
+                        alert('Would open modal to create test case');
+                    }
+                });
+            });
+
+            // Handle ticket icon clicks
+            document.querySelectorAll('.ticket-icon').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    alert('Would open Linear ticket creation interface');
+                });
+            });
+
+            // Handle tab switching with filtering
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const tabText = tab.textContent.toLowerCase();
+                    applyTabFilter(tabText);
+                });
+            });
+
+            // Handle status pill clicks to toggle dropdown
+            document.querySelectorAll('.status-wrapper .status').forEach(statusPill => {
+                statusPill.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const picker = statusPill.closest('.status-wrapper').querySelector('.status-picker');
+
+                    // Close all other pickers
+                    document.querySelectorAll('.status-picker.open').forEach(p => {
+                        if (p !== picker) p.classList.remove('open');
+                    });
+
+                    // Toggle this picker
+                    picker.classList.toggle('open');
+                });
+            });
+
+            // Close status pickers when clicking outside
+            document.addEventListener('click', (e) => {
+                // Close status pickers when clicking outside
+                if (!e.target.closest('.status-wrapper')) {
+                    document.querySelectorAll('.status-picker.open').forEach(p => {
+                        p.classList.remove('open');
+                    });
+                }
+
+                // Close agent filter dropdown when clicking outside
+                if (!e.target.closest('#agentHeader')) {
+                    const dropdown = document.getElementById('agentFilterDropdown');
+                    if (dropdown && dropdown.classList.contains('open')) {
+                        dropdown.classList.remove('open');
+                    }
+                }
+            });
+
+            // Handle status picker clicks in table
+            document.querySelectorAll('.status-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const newStatus = option.getAttribute('data-status');
+                    const row = option.closest('tr.feedback-row');
+                    const feedbackId = row.getAttribute('data-id');
+
+                    // Update the status pill in the table
+                    const statusPill = row.querySelector('.status');
+                    const statusClass = 'status-' + newStatus.replace(/\s+/g, '').toLowerCase();
+                    const dotClass = 'dot-' + newStatus.replace(/\s+/g, '').toLowerCase();
+
+                    // Map data-status to display text
+                    const statusDisplayMap = {
+                        'created': 'Created',
+                        'inprogress': 'In Progress',
+                        'testing': 'Testing',
+                        'verifying': 'Verifying',
+                        'closed': 'Closed'
+                    };
+                    const statusDisplay = statusDisplayMap[newStatus] || newStatus;
+
+                    // Update status pill
+                    statusPill.className = 'status ' + statusClass;
+                    statusPill.innerHTML = `
+                        <span class="status-dot ${dotClass}"></span>
+                        ${statusDisplay}
+                    `;
+
+                    // Close the picker
+                    option.closest('.status-picker').classList.remove('open');
+
+                    // If detail rail is open for this item, update it too
+                    if (currentFeedbackId === feedbackId) {
+                        const railContent = document.querySelector('.rail-content');
+                        const statusPillInRail = railContent.querySelector('.status-dropdown-custom .status');
+                        if (statusPillInRail) {
+                            statusPillInRail.className = 'status ' + statusClass;
+                            statusPillInRail.style.cssText = 'cursor: pointer;';
+                            statusPillInRail.innerHTML = `
+                                <span class="status-dot ${dotClass}"></span>
+                                ${statusDisplay}
+                            `;
+
+                            // Update timestamp
+                            const now = new Date();
+                            const timeString = now.toLocaleString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                            });
+                            const timestampDiv = railContent.querySelector('.detail-value > div[style*="font-size: 11px"]');
+                            if (timestampDiv) {
+                                timestampDiv.textContent = `Changed ${timeString}`;
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Handle search input
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('.feedback-row');
+
+                rows.forEach(row => {
+                    const title = row.querySelector('.title-link').textContent.toLowerCase();
+                    const reporter = row.querySelectorAll('td')[2].textContent.toLowerCase();
+                    const agent = row.querySelectorAll('td')[3].textContent.toLowerCase();
+
+                    if (title.includes(searchTerm) || reporter.includes(searchTerm) || agent.includes(searchTerm)) {
+                        row.classList.remove('filtered-hidden');
+                    } else {
+                        row.classList.add('filtered-hidden');
+                    }
+                });
+
+                // Reset to page 1 and update pagination
+                currentPage = 1;
+                updatePagination();
+            });
+
+            // Handle add column button click
+            const addColumnIcon = document.getElementById('addColumnIcon');
+            if (addColumnIcon) {
+                addColumnIcon.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('Add column clicked');
+                    window.openColumnCustomizerRail();
+                });
+            }
+        });
+
+        // Filter function
+        function applyTabFilter(tabText) {
+            const rows = document.querySelectorAll('.feedback-row');
+
+            rows.forEach(row => {
+                const statusCell = row.querySelector('.status');
+                const statusText = statusCell.textContent.trim().toLowerCase();
+
+                if (tabText === 'all') {
+                    // Show everything
+                    row.classList.remove('filtered-hidden');
+                } else if (tabText === 'active') {
+                    // Show anything that's NOT "closed"
+                    if (statusText === 'closed') {
+                        row.classList.add('filtered-hidden');
+                    } else {
+                        row.classList.remove('filtered-hidden');
+                    }
+                } else if (tabText === 'closed') {
+                    // Only show items with status = "Closed"
+                    if (statusText === 'closed') {
+                        row.classList.remove('filtered-hidden');
+                    } else {
+                        row.classList.add('filtered-hidden');
+                    }
+                }
+            });
+
+            // Reset to page 1 and update pagination
+            currentPage = 1;
+            updatePagination();
+        }
+
+        // Apply active filter on page load
+        window.addEventListener('load', function() {
+            applyTabFilter('active');
+        });
+
+        // Handle tab switching with filtering (moved to DOMContentLoaded above)
+
+        // Handle status picker clicks (moved to DOMContentLoaded above)
+
+        // Sort functionality
+        let statusSortDir = 0; // 0 = no sort, 1 = ascending, -1 = descending
+        let dateSortDir = 1;
+        let originalRowOrder = [];
+
+        window.addEventListener('load', function() {
+            const statusHeader = document.getElementById('statusHeader');
+            const createdHeader = document.getElementById('createdHeader');
+
+            // Store original row order
+            const tbody = document.querySelector('tbody');
+            originalRowOrder = Array.from(tbody.querySelectorAll('tr.feedback-row'));
+
+            // Sort by status (3-state: asc -> desc -> no sort)
+            statusHeader.addEventListener('click', function(e) {
+                // Don't sort if clicking the gear icon
+                if (e.target.closest('.settings-icon')) {
+                    return;
+                }
+
+                const tbody = document.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr.feedback-row'));
+
+                // Cycle through sort states: 0 -> 1 -> -1 -> 0
+                if (statusSortDir === 0) {
+                    statusSortDir = 1; // ascending
+                } else if (statusSortDir === 1) {
+                    statusSortDir = -1; // descending
+                } else {
+                    statusSortDir = 0; // back to no sort
+                }
+
+                if (statusSortDir === 0) {
+                    // Restore original order
+                    tbody.innerHTML = '';
+                    originalRowOrder.forEach(row => tbody.appendChild(row));
+                    statusHeader.classList.remove('sorted-asc', 'sorted-desc');
+                } else {
+                    // Sort by status
+                    const statusOrder = {
+                        'created': 1,
+                        'in progress': 2,
+                        'testing': 3,
+                        'verifying': 4,
+                        'closed': 5
+                    };
+
+                    rows.sort((a, b) => {
+                        const statusA = a.querySelector('.status').textContent.trim().toLowerCase();
+                        const statusB = b.querySelector('.status').textContent.trim().toLowerCase();
+                        return (statusOrder[statusA] - statusOrder[statusB]) * statusSortDir;
+                    });
+
+                    tbody.innerHTML = '';
+                    rows.forEach(row => tbody.appendChild(row));
+
+                    // Update header classes
+                    statusHeader.classList.remove('sorted-asc', 'sorted-desc');
+                    statusHeader.classList.add(statusSortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+                }
+
+                // Reset other headers
+                createdHeader.classList.remove('sorted-asc', 'sorted-desc');
+            });
+
+            // Sort by date
+            createdHeader.addEventListener('click', function(e) {
+                const tbody = document.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr.feedback-row'));
+
+                rows.sort((a, b) => {
+                    const dateA = a.querySelectorAll('td')[4].textContent.trim();
+                    const dateB = b.querySelectorAll('td')[4].textContent.trim();
+
+                    // Convert MM/DD/YYYY to comparable format
+                    const [monthA, dayA, yearA] = dateA.split('/');
+                    const [monthB, dayB, yearB] = dateB.split('/');
+                    const timeA = new Date(yearA, monthA - 1, dayA).getTime();
+                    const timeB = new Date(yearB, monthB - 1, dayB).getTime();
+
+                    return (timeA - timeB) * dateSortDir;
+                });
+
+                tbody.innerHTML = '';
+                rows.forEach(row => tbody.appendChild(row));
+
+                // Reset other headers
+                statusHeader.classList.remove('sorted-asc', 'sorted-desc');
+                createdHeader.classList.remove('sorted-asc', 'sorted-desc');
+                createdHeader.classList.add(dateSortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+
+                dateSortDir *= -1;
+            });
+        });
+
+        // New Feedback Modal
+        window.openNewFeedbackModal = function() {
+            document.getElementById('newFeedbackModal').classList.add('open');
+
+            // Setup validation for Create Feedback button
+            const titleInput = document.getElementById('feedbackTitleInput');
+            const agentSelect = document.getElementById('feedbackAgentSelect');
+            const createBtn = document.getElementById('createFeedbackBtn');
+
+            function validateFeedbackForm() {
+                const hasTitle = titleInput.value.trim().length > 0;
+                const hasAgent = agentSelect.value !== '';
+
+                if (hasTitle && hasAgent) {
+                    createBtn.disabled = false;
+                    createBtn.style.opacity = '1';
+                    createBtn.style.cursor = 'pointer';
+                    createBtn.style.background = '#1a1d24';
+                    createBtn.style.color = '#fff';
+                    createBtn.style.borderColor = '#1a1d24';
+                } else {
+                    createBtn.disabled = true;
+                    createBtn.style.opacity = '0.5';
+                    createBtn.style.cursor = 'not-allowed';
+                    createBtn.style.background = '#fff';
+                    createBtn.style.color = '#666';
+                    createBtn.style.borderColor = '#d1d1d6';
+                }
+            }
+
+            titleInput.addEventListener('input', validateFeedbackForm);
+            agentSelect.addEventListener('change', validateFeedbackForm);
+        };
+
+        window.closeNewFeedbackModal = function() {
+            document.getElementById('newFeedbackModal').classList.remove('open');
+
+            // Reset form
+            const titleInput = document.getElementById('feedbackTitleInput');
+            const agentSelect = document.getElementById('feedbackAgentSelect');
+            const createBtn = document.getElementById('createFeedbackBtn');
+
+            if (titleInput) titleInput.value = '';
+            if (agentSelect) agentSelect.value = '';
+            if (createBtn) {
+                createBtn.disabled = true;
+                createBtn.style.opacity = '0.5';
+                createBtn.style.cursor = 'not-allowed';
+                createBtn.style.background = '#fff';
+                createBtn.style.color = '#666';
+                createBtn.style.borderColor = '#d1d1d6';
+            }
+        };
+
+
+        // Date filter handler
+        window.handleDateFilter = function(select) {
+            const customDateStart = document.getElementById('customDateStart');
+            const customDateEnd = document.getElementById('customDateEnd');
+
+            if (select.value === 'custom') {
+                customDateStart.style.display = 'block';
+                customDateEnd.style.display = 'block';
+                customDateStart.focus();
+            } else {
+                customDateStart.style.display = 'none';
+                customDateEnd.style.display = 'none';
+
+                // Here you would filter the table based on the selected date range
+                if (select.value !== 'all') {
+                    alert('Would filter by: ' + select.options[select.selectedIndex].text);
+                }
+            }
+        };
+
+        // Handle reviewed filter
+        window.handleReviewedFilter = function(select) {
+            const allRows = document.querySelectorAll('.feedback-row');
+            const filterValue = select.value;
+
+            allRows.forEach(row => {
+                const feedbackId = row.getAttribute('data-id');
+                const isReviewed = reviewedItems[feedbackId];
+
+                if (filterValue === 'all') {
+                    row.style.display = '';
+                } else if (filterValue === 'reviewed') {
+                    row.style.display = isReviewed ? '' : 'none';
+                } else if (filterValue === 'unreviewed') {
+                    row.style.display = isReviewed ? 'none' : '';
+                }
+            });
+        };
+
+        // Ticket management
+        let linearTickets = {}; // { feedbackId: 'ENG-1234' }
+        let externalTickets = {}; // { feedbackId: 'https://...' }
+
+        window.createLinearTicket = function() {
+            if (!currentFeedbackId) return;
+
+            // Generate a mock Linear ticket ID
+            const ticketId = 'ENG-' + Math.floor(Math.random() * 9000 + 1000);
+            linearTickets[currentFeedbackId] = ticketId;
+
+            // Update the ticket section
+            updateTicketSection();
+        };
+
+        window.saveExternalTicket = function() {
+            if (!currentFeedbackId) return;
+
+            const urlInput = document.getElementById('externalTicketUrl');
+            const url = urlInput ? urlInput.value.trim() : '';
+
+            if (url) {
+                externalTickets[currentFeedbackId] = url;
+            } else {
+                delete externalTickets[currentFeedbackId];
+            }
+
+            // Update the ticket section
+            updateTicketSection();
+        };
+
+        function updateTicketSection() {
+            if (!currentFeedbackId) return;
+
+            const ticketSection = document.getElementById('ticketSection');
+            if (!ticketSection) return;
+
+            const linearTicket = linearTickets[currentFeedbackId];
+            const externalTicket = externalTickets[currentFeedbackId];
+
+            let html = '';
+
+            // Show Linear ticket if exists
+            if (linearTicket) {
+                html += '<div>';
+                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; margin-bottom: 4px; display: block;">Internal</span>';
+                html += '<a href="#" onclick="alert(\'Would open Linear ticket: ' + linearTicket + '\'); return false;" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 4px;">';
+                html += '🔲 ' + linearTicket + ' <span style="font-size: 11px;">↗</span>';
+                html += '</a>';
+                html += '</div>';
+            } else {
+                html += '<button class="btn" onclick="createLinearTicket(); return false;" style="padding: 6px 12px; font-size: 13px;">Create Linear Ticket</button>';
+            }
+
+            // Show external ticket if exists
+            if (externalTicket) {
+                // Try to extract ticket ID from common patterns
+                let displayText = externalTicket;
+                const jiraMatch = externalTicket.match(/([A-Z]+-\d+)/);
+                const zenMatch = externalTicket.match(/tickets\/(\d+)/);
+
+                if (jiraMatch) {
+                    displayText = jiraMatch[1];
+                } else if (zenMatch) {
+                    displayText = 'Ticket #' + zenMatch[1];
+                }
+
+                html += '<div style="margin-top: 12px;">';
+                html += '<span style="font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; margin-bottom: 4px; display: block;">Customer</span>';
+                html += '<a href="' + externalTicket + '" target="_blank" style="color: #6366f1; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 4px;">';
+                html += '🔗 ' + displayText + ' <span style="font-size: 11px;">↗</span>';
+                html += '</a>';
+                html += '<div style="font-size: 11px; color: #999; word-break: break-all;">' + externalTicket + '</div>';
+                html += '</div>';
+            } else {
+                html += '<div style="margin-top: 12px;">';
+                html += '<label style="font-size: 11px; color: #999; display: block; margin-bottom: 6px;">External ticket URL</label>';
+                html += '<input type="text" id="externalTicketUrl" placeholder="Paste link..." style="width: 100%; padding: 7px 10px; border: 1.5px solid #d1d1d6; border-radius: 6px; font-size: 13px;" onblur="saveExternalTicket()">';
+                html += '</div>';
+            }
+
+            ticketSection.innerHTML = html;
+        }
+
+        // Open column customizer
+        // Make functions globally accessible
+        window.openColumnCustomizer = function() {
+            console.log('openColumnCustomizer called');
+            try {
+                window.openColumnCustomizerRail();
+            } catch (error) {
+                console.error('Error in openColumnCustomizer:', error);
+                alert('Error opening column customizer: ' + error.message);
+            }
+        };
+
+        // Handle column type selection
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.column-type-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.column-type-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+
+                    const type = this.getAttribute('data-type');
+                    const optionsGroup = document.getElementById('selectOptionsGroup');
+                    if (type === 'select') {
+                        optionsGroup.style.display = 'block';
+                    } else {
+                        optionsGroup.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Status config modal
+        window.openStatusConfig = function() {
+            isAddingStatus = false;
+            refreshStatusConfigModal();
+            document.getElementById('statusConfigModal').classList.add('open');
+        };
+
+        window.closeStatusConfig = function() {
+            isAddingStatus = false;
+            document.getElementById('statusConfigModal').classList.remove('open');
+        };
+
+        // Open right rail for column customization
+        window.openColumnCustomizerRail = function() {
+            console.log('openColumnCustomizerRail called');
+
+            // Check if max columns limit is reached
+            const existingCustomColumns = document.querySelectorAll('.custom-column-header');
+            if (existingCustomColumns.length >= 10) {
+                alert('Maximum of 10 custom columns allowed. Please delete an existing column to add a new one.');
+                return;
+            }
+
+            const rail = document.getElementById('rightRail');
+            const railContent = document.querySelector('.rail-content');
+
+            if (!rail || !railContent) {
+                console.error('Rail or railContent not found');
+                alert('Error: Could not find rail elements');
+                return;
+            }
+
+            railContent.innerHTML = `
+                <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Add Custom Column</h2>
+
+                <div class="form-group">
+                    <label class="form-label">Column Name *</label>
+                    <input type="text" class="form-input" placeholder="e.g., Priority, Severity, Team" id="columnNameInput">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Type *</label>
+                    <select class="form-select" id="columnTypeSelect">
+                        <option value="text">Text</option>
+                        <option value="select">Select (Dropdown)</option>
+                        <option value="number">Number</option>
+                        <option value="date">Date</option>
+                        <option value="person">Person</option>
+                        <option value="checkbox">Checkbox</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="selectOptionsGroupRail" style="display: none;">
+                    <label class="form-label">Options (one per line)</label>
+                    <textarea class="form-textarea" placeholder="High&#10;Medium&#10;Low" rows="4"></textarea>
+                    <div class="form-hint">Each option should be on a new line</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Properties</label>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label id="allowSortCheckboxLabel" style="display: none; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                            <input type="checkbox" id="allowSortCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span>Allow sorting</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                            <input type="checkbox" id="requiredCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span>Required field</span>
+                        </label>
+                        <label id="counterCheckboxLabel" style="display: none; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                            <input type="checkbox" id="isCounterCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span>Auto-increment counter (1, 2, 3...)</span>
+                        </label>
+                        <label id="hasDefaultValueCheckboxLabel" style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                            <input type="checkbox" id="hasDefaultValueCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span>Default value (optional)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="defaultValueGroup" style="display: none;">
+                    <label class="form-label">Default Value</label>
+                    <input type="text" class="form-input" id="defaultValueInput" placeholder="e.g., Medium, High Priority">
+                    <div class="form-hint">This value will be pre-filled for all existing items</div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 32px;">
+                    <button class="btn" onclick="closeRail()" style="flex: 1;">Cancel</button>
+                    <button class="btn btn-primary" id="addColumnBtn" style="flex: 1; opacity: 0.5; cursor: not-allowed;" disabled>Add Column</button>
+                </div>
+            `;
+
+            rail.classList.add('open');
+            document.getElementById('rightRailBackdrop').classList.add('open');
+
+            // Re-attach event listeners for column type dropdown
+            const columnTypeSelect = document.getElementById('columnTypeSelect');
+            const optionsGroup = document.getElementById('selectOptionsGroupRail');
+            const isCounterCheckbox = document.getElementById('isCounterCheckbox');
+            const counterCheckboxLabel = document.getElementById('counterCheckboxLabel');
+            const allowSortCheckboxLabel = document.getElementById('allowSortCheckboxLabel');
+            const hasDefaultValueCheckbox = document.getElementById('hasDefaultValueCheckbox');
+            const hasDefaultValueCheckboxLabel = document.getElementById('hasDefaultValueCheckboxLabel');
+            const defaultValueGroup = document.getElementById('defaultValueGroup');
+            const columnNameInput = document.getElementById('columnNameInput');
+            const addColumnBtn = document.getElementById('addColumnBtn');
+
+            // Enable/disable Add Column button based on column name input
+            columnNameInput.addEventListener('input', function() {
+                if (this.value.trim().length > 0) {
+                    addColumnBtn.disabled = false;
+                    addColumnBtn.style.opacity = '1';
+                    addColumnBtn.style.cursor = 'pointer';
+                    addColumnBtn.style.background = '#1a1d24';
+                    addColumnBtn.style.color = '#fff';
+                    addColumnBtn.style.borderColor = '#1a1d24';
+                } else {
+                    addColumnBtn.disabled = true;
+                    addColumnBtn.style.opacity = '0.5';
+                    addColumnBtn.style.cursor = 'not-allowed';
+                    addColumnBtn.style.background = '#fff';
+                    addColumnBtn.style.color = '#666';
+                    addColumnBtn.style.borderColor = '#d1d1d6';
+                }
+            });
+
+            columnTypeSelect.addEventListener('change', function() {
+                if (this.value === 'select') {
+                    optionsGroup.style.display = 'block';
+                } else {
+                    optionsGroup.style.display = 'none';
+                }
+
+                // Show allow sorting checkbox for non-text columns
+                if (this.value !== 'text') {
+                    allowSortCheckboxLabel.style.display = 'flex';
+                } else {
+                    allowSortCheckboxLabel.style.display = 'none';
+                }
+
+                // Show counter checkbox only for number type
+                if (this.value === 'number') {
+                    counterCheckboxLabel.style.display = 'flex';
+                } else {
+                    counterCheckboxLabel.style.display = 'none';
+                    isCounterCheckbox.checked = false;
+                }
+            });
+
+            // Handle counter checkbox
+            isCounterCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    hasDefaultValueCheckboxLabel.style.display = 'none';
+                    hasDefaultValueCheckbox.checked = false;
+                    defaultValueGroup.style.display = 'none';
+                } else {
+                    hasDefaultValueCheckboxLabel.style.display = 'flex';
+                }
+            });
+
+            // Handle default value checkbox
+            hasDefaultValueCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    defaultValueGroup.style.display = 'block';
+                } else {
+                    defaultValueGroup.style.display = 'none';
+                }
+            });
+
+            // Initialize visibility based on default selected type (text)
+            // Text columns don't show sorting option
+            allowSortCheckboxLabel.style.display = 'none';
+            counterCheckboxLabel.style.display = 'none';
+
+            // Reset border color on input
+            document.getElementById('columnNameInput').addEventListener('input', function() {
+                this.style.borderColor = '#d1d1d6';
+            });
+
+            // Add Column button functionality
+            const addBtn = document.getElementById('addColumnBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', function() {
+                    try {
+                        const columnNameInput = document.getElementById('columnNameInput');
+                        const defaultValueInput = document.getElementById('defaultValueInput');
+                        const columnName = columnNameInput.value.trim();
+                        const columnType = columnTypeSelect.value;
+                        const defaultValue = hasDefaultValueCheckbox.checked ? defaultValueInput.value.trim() : '';
+                        const isCounter = isCounterCheckbox.checked;
+
+                        if (!columnName) {
+                            columnNameInput.style.borderColor = '#ef4444';
+                            columnNameInput.focus();
+                            alert('Please enter a column name');
+                            return;
+                        }
+
+                        // Add column to table header
+                        const thead = document.querySelector('thead tr');
+                        const lastTh = thead.querySelector('th:last-child');
+
+                        const newTh = document.createElement('th');
+                        newTh.className = 'custom-column-header';
+                        newTh.style.width = '150px';
+
+                        newTh.innerHTML = `
+                            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                <span>${columnName}</span>
+                                <span class="column-edit-icon">⚙</span>
+                            </span>
+                        `;
+
+                        newTh.setAttribute('data-column-name', columnName);
+                        newTh.setAttribute('data-column-type', columnType);
+                        newTh.setAttribute('data-default-value', defaultValue);
+                        newTh.setAttribute('data-is-counter', isCounter);
+                        newTh.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            openColumnEditView(this);
+                        });
+
+                        thead.insertBefore(newTh, lastTh);
+
+                        // Add cells to all rows
+                        const rows = document.querySelectorAll('tbody tr');
+                        rows.forEach((row, index) => {
+                            const newTd = document.createElement('td');
+                            // Populate with counter if enabled, otherwise use default value
+                            if (isCounter) {
+                                newTd.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${index + 1}</span>`;
+                            } else if (defaultValue) {
+                                newTd.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${defaultValue}</span>`;
+                            } else {
+                                newTd.innerHTML = '';
+                            }
+                            newTd.style.cursor = 'pointer';
+                            newTd.setAttribute('data-column-type', columnType);
+                            newTd.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                editCustomCell(this, columnType);
+                            });
+                            const lastTd = row.querySelector('td:last-child');
+                            row.insertBefore(newTd, lastTd);
+                        });
+
+                        closeRail();
+                        updateAddColumnButton();
+                    } catch (error) {
+                        console.error('Error adding column:', error);
+                        alert('Error adding column: ' + error.message);
+                    }
+                });
+            }
+        }
+
+        // Update add column button visibility based on column count
+        window.updateAddColumnButton = function() {
+            const addColumnIcon = document.getElementById('addColumnIcon');
+            const existingCustomColumns = document.querySelectorAll('.custom-column-header');
+
+            if (existingCustomColumns.length >= 10) {
+                addColumnIcon.style.opacity = '0.3';
+                addColumnIcon.style.cursor = 'not-allowed';
+                addColumnIcon.title = 'Maximum 10 columns reached';
+            } else {
+                addColumnIcon.style.opacity = '1';
+                addColumnIcon.style.cursor = 'pointer';
+                addColumnIcon.title = 'Add custom column';
+            }
+        };
+
+        // Edit custom cell function
+        window.editCustomCell = function(td, columnType) {
+            const currentValue = td.textContent.trim();
+
+            if (columnType === 'text') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentValue;
+                input.style.cssText = 'width: 100%; padding: 6px 8px; border: 1.5px solid #6366f1; border-radius: 4px; font-size: 13px;';
+                input.addEventListener('blur', function() {
+                    const newValue = this.value.trim();
+                    if (newValue) {
+                        td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${newValue}</span>`;
+                    } else {
+                        td.innerHTML = '';
+                    }
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        this.blur();
+                    } else if (e.key === 'Escape') {
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                    }
+                });
+                td.innerHTML = '';
+                td.appendChild(input);
+                input.focus();
+            } else if (columnType === 'number') {
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.value = currentValue;
+                input.style.cssText = 'width: 100%; padding: 6px 8px; border: 1.5px solid #6366f1; border-radius: 4px; font-size: 13px;';
+                input.addEventListener('blur', function() {
+                    const newValue = this.value.trim();
+                    if (newValue) {
+                        td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${newValue}</span>`;
+                    } else {
+                        td.innerHTML = '';
+                    }
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        this.blur();
+                    } else if (e.key === 'Escape') {
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                    }
+                });
+                td.innerHTML = '';
+                td.appendChild(input);
+                input.focus();
+            } else if (columnType === 'date') {
+                const input = document.createElement('input');
+                input.type = 'date';
+                input.value = currentValue;
+                input.style.cssText = 'width: 100%; padding: 6px 8px; border: 1.5px solid #6366f1; border-radius: 4px; font-size: 13px;';
+                input.addEventListener('blur', function() {
+                    const newValue = this.value;
+                    if (newValue) {
+                        // Format date nicely
+                        const date = new Date(newValue);
+                        const formatted = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+                        td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${formatted}</span>`;
+                    } else {
+                        td.innerHTML = '';
+                    }
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                    }
+                });
+                td.innerHTML = '';
+                td.appendChild(input);
+                input.focus();
+                input.showPicker();
+            } else if (columnType === 'checkbox') {
+                const isChecked = currentValue === '✓' || currentValue === 'Yes';
+                const newState = !isChecked;
+                if (newState) {
+                    td.innerHTML = '<span style="font-size: 16px; color: #10b981;">✓</span>';
+                } else {
+                    td.innerHTML = '';
+                }
+            } else {
+                // For select, person, and other types, just show a simple text input for now
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentValue;
+                input.style.cssText = 'width: 100%; padding: 6px 8px; border: 1.5px solid #6366f1; border-radius: 4px; font-size: 13px;';
+                input.addEventListener('blur', function() {
+                    const newValue = this.value.trim();
+                    if (newValue) {
+                        td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${newValue}</span>`;
+                    } else {
+                        td.innerHTML = '';
+                    }
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        this.blur();
+                    } else if (e.key === 'Escape') {
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                    }
+                });
+                td.innerHTML = '';
+                td.appendChild(input);
+                input.focus();
+            }
+        };
+
+        // Open column edit view (make it globally accessible)
+        window.openColumnEditView = function(th) {
+            const rail = document.getElementById('rightRail');
+            const railContent = document.querySelector('.rail-content');
+            const columnName = th.getAttribute('data-column-name');
+            const columnType = th.getAttribute('data-column-type');
+            const allowSort = th.getAttribute('data-allow-sort') === 'true';
+            const required = th.getAttribute('data-required') === 'true';
+            const isCounter = th.getAttribute('data-is-counter') === 'true';
+
+            railContent.innerHTML = `
+                <div style="margin-bottom: 24px;">
+                    <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px;">Edit Column</h2>
+
+                    <div class="form-group">
+                        <label class="form-label">Column Name *</label>
+                        <input type="text" class="form-input" id="editColumnNameInput" value="${columnName}">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" id="editColumnTypeSelect" disabled>
+                            <option value="text" ${columnType === 'text' ? 'selected' : ''}>Text</option>
+                            <option value="select" ${columnType === 'select' ? 'selected' : ''}>Select (Dropdown)</option>
+                            <option value="number" ${columnType === 'number' ? 'selected' : ''}>Number</option>
+                            <option value="date" ${columnType === 'date' ? 'selected' : ''}>Date</option>
+                            <option value="person" ${columnType === 'person' ? 'selected' : ''}>Person</option>
+                            <option value="checkbox" ${columnType === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                        </select>
+                        <div class="form-hint">Column type cannot be changed after creation</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Properties</label>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="${columnType !== 'text' ? 'display: flex;' : 'display: none;'} align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                                <input type="checkbox" id="editAllowSortCheckbox" ${allowSort ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;">
+                                <span>Allow sorting</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                                <input type="checkbox" id="editRequiredCheckbox" ${required ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;">
+                                <span>Required field</span>
+                            </label>
+                            <label style="${columnType === 'number' ? 'display: flex;' : 'display: none;'} align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                                <input type="checkbox" id="editIsCounterCheckbox" ${isCounter ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;">
+                                <span>Auto-increment counter (1, 2, 3...)</span>
+                            </label>
+                            <label id="editHasDefaultValueCheckboxLabel" style="${isCounter ? 'display: none;' : 'display: flex;'} align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
+                                <input type="checkbox" id="editHasDefaultValueCheckbox" ${th.getAttribute('data-default-value') ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;">
+                                <span>Default value (optional)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="editDefaultValueGroup" style="${isCounter || !th.getAttribute('data-default-value') ? 'display: none;' : 'display: block;'}">
+                        <label class="form-label">Default Value</label>
+                        <input type="text" class="form-input" id="editDefaultValueInput" value="${th.getAttribute('data-default-value') || ''}" placeholder="e.g., Medium, High Priority">
+                        <div class="form-hint">This value will be pre-filled for new items</div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 32px;">
+                        <button class="btn" onclick="closeRail()" style="flex: 1;">Cancel</button>
+                        <button class="btn btn-primary" id="saveColumnBtn" style="flex: 1; opacity: 0.5; cursor: not-allowed;" disabled>Save Changes</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 24px; border-top: 2px solid #e5e5e7;">
+                    <button class="btn" id="deleteColumnBtn" style="width: auto; padding: 8px 20px; background: #fee; border-color: #fca5a5; color: #dc2626; font-weight: 500; font-size: 13px; border-radius: 20px;">
+                        Delete Column
+                    </button>
+                    <div style="font-size: 12px; color: #666; margin-top: 8px;">
+                        This action cannot be undone. All data in this column will be permanently deleted.
+                    </div>
+                </div>
+            `;
+
+            rail.classList.add('open');
+            document.getElementById('rightRailBackdrop').classList.add('open');
+
+            // Save changes functionality
+            const editNameInput = document.getElementById('editColumnNameInput');
+            const editDefaultValueInput = document.getElementById('editDefaultValueInput');
+            const editDefaultValueGroup = document.getElementById('editDefaultValueGroup');
+            const editHasDefaultValueCheckbox = document.getElementById('editHasDefaultValueCheckbox');
+            const editHasDefaultValueCheckboxLabel = document.getElementById('editHasDefaultValueCheckboxLabel');
+            const saveBtn = document.getElementById('saveColumnBtn');
+            const allowSortCheckbox = document.getElementById('editAllowSortCheckbox');
+            const requiredCheckbox = document.getElementById('editRequiredCheckbox');
+            const editIsCounterCheckbox = document.getElementById('editIsCounterCheckbox');
+
+            // Track initial state
+            const initialAllowSort = allowSortCheckbox.checked;
+            const initialRequired = requiredCheckbox.checked;
+
+            // Function to enable save button
+            function enableSaveButton() {
+                saveBtn.disabled = false;
+                saveBtn.style.opacity = '1';
+                saveBtn.style.cursor = 'pointer';
+                saveBtn.style.background = '#1a1d24';
+                saveBtn.style.color = '#fff';
+                saveBtn.style.borderColor = '#1a1d24';
+            }
+
+            // Handle counter checkbox
+            editIsCounterCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    editHasDefaultValueCheckboxLabel.style.display = 'none';
+                    editHasDefaultValueCheckbox.checked = false;
+                    editDefaultValueGroup.style.display = 'none';
+                } else {
+                    editHasDefaultValueCheckboxLabel.style.display = 'flex';
+                }
+                enableSaveButton();
+            });
+
+            // Handle default value checkbox
+            editHasDefaultValueCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    editDefaultValueGroup.style.display = 'block';
+                } else {
+                    editDefaultValueGroup.style.display = 'none';
+                }
+                enableSaveButton();
+            });
+
+            // Enable/disable save button based on changes
+            editNameInput.addEventListener('input', enableSaveButton);
+            editDefaultValueInput.addEventListener('input', enableSaveButton);
+
+            // Enable save button when checkboxes change
+            allowSortCheckbox.addEventListener('change', enableSaveButton);
+            requiredCheckbox.addEventListener('change', enableSaveButton);
+
+            // Initially disable if no change
+            saveBtn.disabled = true;
+            saveBtn.style.opacity = '0.5';
+            saveBtn.style.cursor = 'not-allowed';
+            saveBtn.style.background = '#fff';
+            saveBtn.style.color = '#666';
+            saveBtn.style.borderColor = '#d1d1d6';
+
+            saveBtn.addEventListener('click', function() {
+                const newName = editNameInput.value.trim();
+
+                if (!newName) {
+                    editNameInput.style.borderColor = '#ef4444';
+                    editNameInput.focus();
+                    return;
+                }
+
+                // Update column name and properties
+                th.setAttribute('data-column-name', newName);
+                th.setAttribute('data-allow-sort', allowSortCheckbox.checked);
+                th.setAttribute('data-required', requiredCheckbox.checked);
+                th.setAttribute('data-default-value', editHasDefaultValueCheckbox.checked ? editDefaultValueInput.value.trim() : '');
+                th.setAttribute('data-is-counter', editIsCounterCheckbox.checked);
+
+                const spanWrapper = th.querySelector('span');
+                spanWrapper.innerHTML = `
+                    <span>${newName}</span>
+                    <span class="column-edit-icon">⚙</span>
+                `;
+
+                closeRail();
+            });
+
+            // Delete column functionality
+            const deleteBtn = document.getElementById('deleteColumnBtn');
+            deleteBtn.addEventListener('mouseenter', function() {
+                this.style.background = '#fecaca';
+                this.style.borderColor = '#ef4444';
+            });
+            deleteBtn.addEventListener('mouseleave', function() {
+                this.style.background = '#fee';
+                this.style.borderColor = '#fca5a5';
+            });
+            deleteBtn.addEventListener('click', function() {
+                if (!confirm(`Delete column "${columnName}"? This will permanently delete all data in this column.`)) {
+                    return;
+                }
+
+                const columnIndex = Array.from(th.parentElement.children).indexOf(th);
+
+                // Remove header
+                th.remove();
+
+                // Remove cells from all rows
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells[columnIndex]) {
+                        cells[columnIndex].remove();
+                    }
+                });
+
+                closeRail();
+                updateAddColumnButton();
+            });
+        }
+
+        // Initialize add column button state on page load
+        window.addEventListener('load', function() {
+            updateAddColumnButton();
+        });
+
+        // Pagination
+        let currentPage = 1;
+        const itemsPerPage = 50;
+
+        window.updatePagination = function() {
+            const allRows = Array.from(document.querySelectorAll('.feedback-row'));
+
+            // Get rows that match current filters (not hidden by class 'filtered-hidden')
+            const visibleRows = allRows.filter(row => !row.classList.contains('filtered-hidden'));
+            const totalItems = visibleRows.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            // Reset current page if it's beyond available pages
+            if (currentPage > totalPages && totalPages > 0) {
+                currentPage = totalPages;
+            } else if (totalPages === 0) {
+                currentPage = 1;
+            }
+
+            // Update info text
+            const start = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+            const end = Math.min(currentPage * itemsPerPage, totalItems);
+            document.getElementById('paginationInfo').textContent = `Showing ${start}-${end} of ${totalItems}`;
+
+            // Hide all rows first
+            allRows.forEach(row => {
+                if (!row.classList.contains('filtered-hidden')) {
+                    row.classList.add('page-hidden');
+                }
+            });
+
+            // Show only rows for current page
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            visibleRows.slice(startIndex, endIndex).forEach(row => {
+                row.classList.remove('page-hidden');
+            });
+
+            // Update pagination buttons
+            renderPaginationButtons(totalPages);
+
+            // Update prev/next buttons
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+        };
+
+        window.renderPaginationButtons = function(totalPages) {
+            const pagination = document.getElementById('pagination');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            // Clear existing page buttons (keep prev/next)
+            const buttons = pagination.querySelectorAll('.pagination-btn:not(#prevBtn):not(#nextBtn)');
+            buttons.forEach(btn => btn.remove());
+
+            if (totalPages <= 1) {
+                // Just show page 1
+                const btn = document.createElement('button');
+                btn.className = 'pagination-btn active';
+                btn.textContent = '1';
+                btn.onclick = () => goToPage(1);
+                pagination.insertBefore(btn, nextBtn);
+                return;
+            }
+
+            // Show up to 7 page buttons with ellipsis
+            const maxButtons = 7;
+            let startPage = 1;
+            let endPage = totalPages;
+
+            if (totalPages > maxButtons) {
+                if (currentPage <= 4) {
+                    endPage = maxButtons - 1;
+                } else if (currentPage >= totalPages - 3) {
+                    startPage = totalPages - (maxButtons - 2);
+                } else {
+                    startPage = currentPage - 2;
+                    endPage = currentPage + 2;
+                }
+            }
+
+            // Add first page
+            if (startPage > 1) {
+                const btn = document.createElement('button');
+                btn.className = 'pagination-btn';
+                btn.textContent = '1';
+                btn.onclick = () => goToPage(1);
+                pagination.insertBefore(btn, nextBtn);
+
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'pagination-ellipsis';
+                    ellipsis.textContent = '...';
+                    pagination.insertBefore(ellipsis, nextBtn);
+                }
+            }
+
+            // Add page buttons
+            for (let i = startPage; i <= endPage; i++) {
+                const btn = document.createElement('button');
+                btn.className = i === currentPage ? 'pagination-btn active' : 'pagination-btn';
+                btn.textContent = i;
+                btn.onclick = () => goToPage(i);
+                pagination.insertBefore(btn, nextBtn);
+            }
+
+            // Add last page
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'pagination-ellipsis';
+                    ellipsis.textContent = '...';
+                    pagination.insertBefore(ellipsis, nextBtn);
+                }
+
+                const btn = document.createElement('button');
+                btn.className = 'pagination-btn';
+                btn.textContent = totalPages;
+                btn.onclick = () => goToPage(totalPages);
+                pagination.insertBefore(btn, nextBtn);
+            }
+        };
+
+        window.goToPage = function(page) {
+            currentPage = page;
+            updatePagination();
+            // Scroll to top of table
+            document.querySelector('.table-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        window.changePage = function(delta) {
+            const rows = document.querySelectorAll('.feedback-row');
+            const totalPages = Math.ceil(rows.length / itemsPerPage);
+            const newPage = currentPage + delta;
+
+            if (newPage >= 1 && newPage <= totalPages) {
+                goToPage(newPage);
+            }
+        };
+
+        // Initialize pagination on load
+        window.addEventListener('load', function() {
+            updatePagination();
+        });
+    </script>
+</body>
+</html>
