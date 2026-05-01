@@ -468,39 +468,37 @@
 
         /* Priority badges - Linear style */
         .priority-badge {
-            display: inline-flex;
-            align-items: flex-end;
-            gap: 1.5px;
-            height: 14px;
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
             margin-right: 8px;
-            opacity: 0.6;
+            flex-shrink: 0;
         }
 
-        .priority-badge .bar {
-            width: 2px;
-            background: #6b7280;
-            border-radius: 1px;
+        .priority-p0 {
+            width: 10px;
+            height: 10px;
+            background: #dc2626;
         }
 
-        .priority-p0 .bar:nth-child(1) { height: 100%; background: #dc2626; }
-        .priority-p0 .bar:nth-child(2) { height: 85%; background: #dc2626; }
-        .priority-p0 .bar:nth-child(3) { height: 70%; background: #dc2626; }
-        .priority-p0 .bar:nth-child(4) { height: 55%; background: #dc2626; }
+        .priority-p1 {
+            width: 8px;
+            height: 8px;
+            background: #ea580c;
+        }
 
-        .priority-p1 .bar:nth-child(1) { height: 100%; background: #ea580c; }
-        .priority-p1 .bar:nth-child(2) { height: 85%; background: #ea580c; }
-        .priority-p1 .bar:nth-child(3) { height: 70%; background: #ea580c; }
-        .priority-p1 .bar:nth-child(4) { height: 55%; background: #d1d5db; }
+        .priority-p2 {
+            width: 6px;
+            height: 6px;
+            background: #eab308;
+        }
 
-        .priority-p2 .bar:nth-child(1) { height: 100%; background: #eab308; }
-        .priority-p2 .bar:nth-child(2) { height: 85%; background: #eab308; }
-        .priority-p2 .bar:nth-child(3) { height: 70%; background: #d1d5db; }
-        .priority-p2 .bar:nth-child(4) { height: 55%; background: #d1d5db; }
-
-        .priority-p3 .bar:nth-child(1) { height: 100%; background: #9ca3af; }
-        .priority-p3 .bar:nth-child(2) { height: 85%; background: #d1d5db; }
-        .priority-p3 .bar:nth-child(3) { height: 70%; background: #d1d5db; }
-        .priority-p3 .bar:nth-child(4) { height: 55%; background: #d1d5db; }
+        .priority-p3 {
+            width: 5px;
+            height: 5px;
+            background: #9ca3af;
+        }
 
         .actions {
             display: flex;
@@ -1557,12 +1555,12 @@
                     <table>
                         <thead>
                         <tr>
+                            <th class="sortable" id="titleHeader">Title</th>
+                            <th style="width: 200px;">Reporter</th>
                             <th class="sortable" id="statusHeader" style="width: 140px; position: relative;">
                                 Status
                                 <span class="settings-icon" onclick="event.stopPropagation(); openStatusConfig()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.4; filter: grayscale(100%);">✏️</span>
                             </th>
-                            <th class="sortable" id="priorityHeader">Title</th>
-                            <th style="width: 200px;">Reporter</th>
                             <th style="width: 180px; position: relative;" id="agentHeader">
                                 AI Agent
                                 <span class="settings-icon" onclick="event.stopPropagation(); toggleAgentFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.7; cursor: pointer; font-size: 14px; color: #666;">▾</span>
@@ -1579,6 +1577,8 @@
                     </thead>
                     <tbody>
                         <tr class="feedback-row" data-id="1" data-priority="p0">
+                            <td><span class="priority-badge priority-p0"></span><a href="#" class="title-link" data-id="1">Agent picks wrong product SKU</a></td>
+                            <td class="email">manisha.ponniah@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
                                     <span class="status status-inprogress">
@@ -1605,8 +1605,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="priority-badge priority-p0"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="1">Agent picks wrong product SKU</a></td>
-                            <td class="email">manisha.ponniah@cresta.ai</td>
                             <td>Guitar Center Voice Agent</td>
                             <td style="white-space: nowrap;">04/18/2026</td>
                             <td>
@@ -1618,6 +1616,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="2" data-priority="p2">
+                            <td><span class="priority-badge priority-p2"></span><a href="#" class="title-link" data-id="2">Tone sounds robotic in greetings</a></td>
+                            <td class="email">john.doe@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
                                     <span class="status status-created">
@@ -1644,8 +1644,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="priority-badge priority-p2"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="2">Tone sounds robotic in greetings</a></td>
-                            <td class="email">john.doe@cresta.ai</td>
                             <td>Guitar Center Voice Agent</td>
                             <td style="white-space: nowrap;">04/19/2026</td>
                             <td>
@@ -1657,6 +1655,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="3" data-priority="p1">
+                            <td><span class="priority-badge priority-p1"></span><a href="#" class="title-link" data-id="3">Missing context on pricing</a></td>
+                            <td class="email">sarah.jones@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
                                     <span class="status status-inprogress">
@@ -1683,8 +1683,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="priority-badge priority-p1"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="3">Missing context on pricing</a></td>
-                            <td class="email">sarah.jones@cresta.ai</td>
                             <td>Guitar Center Voice Agent</td>
                             <td style="white-space: nowrap;">04/17/2026</td>
                             <td>
@@ -1696,6 +1694,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="4" data-priority="p2">
+                            <td><span class="priority-badge priority-p2"></span><a href="#" class="title-link" data-id="4">Escalation trigger too sensitive</a></td>
+                            <td class="email">mike.chen@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
                                     <span class="status status-testing">
@@ -1722,8 +1722,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="priority-badge priority-p2"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="4">Escalation trigger too sensitive</a></td>
-                            <td class="email">mike.chen@cresta.ai</td>
                             <td>Guitar Center Voice Agent</td>
                             <td style="white-space: nowrap;">04/16/2026</td>
                             <td>
@@ -1735,6 +1733,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="5" data-priority="p3">
+                            <td><span class="priority-badge priority-p3"></span><a href="#" class="title-link" data-id="5">Incorrect hours of operation</a></td>
+                            <td class="email">amy.park@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
                                     <span class="status status-closed">
@@ -1761,8 +1761,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="priority-badge priority-p3"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="5">Incorrect hours of operation</a></td>
-                            <td class="email">amy.park@cresta.ai</td>
                             <td>Guitar Center Voice Agent</td>
                             <td style="white-space: nowrap;">04/15/2026</td>
                             <td>
@@ -1774,6 +1772,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="6" data-priority="p3">
+                            <td><span class="priority-badge priority-p3"></span><a href="#" class="title-link" data-id="6">Agent repeats customer question</a></td>
+                            <td class="email">james.wilson@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
                                     <span class="status status-created">
@@ -1800,8 +1800,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="priority-badge priority-p3"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="6">Agent repeats customer question</a></td>
-                            <td class="email">james.wilson@cresta.ai</td>
                             <td>Guitar Center Voice Agent</td>
                             <td style="white-space: nowrap;">04/20/2026</td>
                             <td>
@@ -1813,6 +1811,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="7" data-priority="p1">
+                            <td><span class="priority-badge priority-p1"></span><a href="#" class="title-link" data-id="7">Agent provides incorrect pricing information</a></td>
+                            <td class="email">emily.davis@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
                                     <span class="status status-created">
@@ -1839,8 +1839,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td><span class="priority-badge priority-p1"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></span><a href="#" class="title-link" data-id="7">Agent provides incorrect pricing information</a></td>
-                            <td class="email">emily.davis@cresta.ai</td>
                             <td>Retail Support Agent</td>
                             <td style="white-space: nowrap;">04/27/2026</td>
                             <td>
@@ -2354,7 +2352,7 @@
                 if (existingBadge) {
                     // Update existing badge
                     existingBadge.className = `priority-badge priority-${newPriority}`;
-                    existingBadge.innerHTML = '<span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>';
+                    existingBadge.innerHTML = '';
                 }
             }
 
@@ -2895,13 +2893,13 @@
         // Sort functionality
         let statusSortDir = 0; // 0 = no sort, 1 = ascending, -1 = descending
         let dateSortDir = 1;
-        let prioritySortDir = 0;
+        let titleSortDir = 0;
         let originalRowOrder = [];
 
         window.addEventListener('load', function() {
             const statusHeader = document.getElementById('statusHeader');
             const createdHeader = document.getElementById('createdHeader');
-            const priorityHeader = document.getElementById('priorityHeader');
+            const titleHeader = document.getElementById('titleHeader');
 
             // Store original row order
             const tbody = document.querySelector('tbody');
@@ -2989,24 +2987,24 @@
             });
 
             // Sort by priority
-            priorityHeader.addEventListener('click', function(e) {
+            titleHeader.addEventListener('click', function(e) {
                 const tbody = document.querySelector('tbody');
                 const rows = Array.from(tbody.querySelectorAll('tr.feedback-row'));
 
                 // Cycle through sort states: 0 -> 1 -> -1 -> 0
-                if (prioritySortDir === 0) {
-                    prioritySortDir = 1; // ascending (P0 -> P3, urgent first)
-                } else if (prioritySortDir === 1) {
-                    prioritySortDir = -1; // descending (P3 -> P0, low first)
+                if (titleSortDir === 0) {
+                    titleSortDir = 1; // ascending (P0 -> P3, urgent first)
+                } else if (titleSortDir === 1) {
+                    titleSortDir = -1; // descending (P3 -> P0, low first)
                 } else {
-                    prioritySortDir = 0; // back to no sort
+                    titleSortDir = 0; // back to no sort
                 }
 
-                if (prioritySortDir === 0) {
+                if (titleSortDir === 0) {
                     // Restore original order
                     tbody.innerHTML = '';
                     originalRowOrder.forEach(row => tbody.appendChild(row));
-                    priorityHeader.classList.remove('sorted-asc', 'sorted-desc');
+                    titleHeader.classList.remove('sorted-asc', 'sorted-desc');
                 } else {
                     // Sort by priority (p0=0, p1=1, p2=2, p3=3)
                     const priorityOrder = {
@@ -3019,15 +3017,15 @@
                     rows.sort((a, b) => {
                         const priorityA = a.getAttribute('data-priority') || 'p2';
                         const priorityB = b.getAttribute('data-priority') || 'p2';
-                        return (priorityOrder[priorityA] - priorityOrder[priorityB]) * prioritySortDir;
+                        return (priorityOrder[priorityA] - priorityOrder[priorityB]) * titleSortDir;
                     });
 
                     tbody.innerHTML = '';
                     rows.forEach(row => tbody.appendChild(row));
 
                     // Update header classes
-                    priorityHeader.classList.remove('sorted-asc', 'sorted-desc');
-                    priorityHeader.classList.add(prioritySortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+                    titleHeader.classList.remove('sorted-asc', 'sorted-desc');
+                    titleHeader.classList.add(titleSortDir === 1 ? 'sorted-asc' : 'sorted-desc');
                 }
 
                 // Reset other headers
