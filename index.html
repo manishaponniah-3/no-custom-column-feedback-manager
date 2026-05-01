@@ -3358,7 +3358,16 @@
                     const newTh = document.createElement('th');
                     newTh.className = 'custom-column-header';
                     newTh.style.width = '180px';
-                    newTh.textContent = columnName;
+                    newTh.style.position = 'relative';
+                    newTh.innerHTML = `
+                        <span style="display: inline-flex; align-items: center; gap: 6px;">
+                            ${columnName}
+                            <span class="delete-column-icon" style="opacity: 0.4; cursor: pointer; font-size: 12px; transition: opacity 0.2s;"
+                                  onmouseover="this.style.opacity='1'"
+                                  onmouseout="this.style.opacity='0.4'"
+                                  onclick="event.stopPropagation(); deleteColumn(this.closest('th'));">✕</span>
+                        </span>
+                    `;
                     newTh.setAttribute('data-column-id', columnId);
                     newTh.setAttribute('data-column-name', columnName);
                     newTh.setAttribute('data-column-type', columnType);
@@ -3405,6 +3414,31 @@
                 addColumnIcon.style.cursor = 'pointer';
                 addColumnIcon.title = 'Add column';
             }
+        };
+
+        // Delete column function
+        window.deleteColumn = function(th) {
+            if (!confirm('Delete this column? All data in this column will be lost.')) {
+                return;
+            }
+
+            const columnId = th.getAttribute('data-column-id');
+            const columnIndex = Array.from(th.parentNode.children).indexOf(th);
+
+            // Remove the header
+            th.remove();
+
+            // Remove corresponding cells from all rows
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells[columnIndex]) {
+                    cells[columnIndex].remove();
+                }
+            });
+
+            // Update the add column button state
+            updateAddColumnButton();
         };
 
         // Edit custom cell function
