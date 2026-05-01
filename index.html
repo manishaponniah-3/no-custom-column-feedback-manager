@@ -3258,12 +3258,11 @@
         window.openColumnCustomizerRail = function() {
             console.log('openColumnCustomizerRail called');
 
-            // Check if max columns limit is reached
-            const existingCustomColumns = document.querySelectorAll('.custom-column-header');
-            if (existingCustomColumns.length >= 10) {
-                alert('Maximum of 10 custom columns allowed. Please delete an existing column to add a new one.');
-                return;
-            }
+            // Check which columns are already added
+            const existingColumns = new Set();
+            document.querySelectorAll('.custom-column-header').forEach(th => {
+                existingColumns.add(th.getAttribute('data-column-id'));
+            });
 
             const rail = document.getElementById('rightRail');
             const railContent = document.querySelector('.rail-content');
@@ -3274,58 +3273,38 @@
                 return;
             }
 
-            railContent.innerHTML = `
-                <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Add Custom Column</h2>
+            // Define available columns
+            const availableColumns = [
+                { id: 'expected-completion', name: 'Expected Completion Date', type: 'date' },
+                { id: 'owner-assignee', name: 'Owner/Assignee', type: 'person' },
+                { id: 'issue-resolution', name: 'Issue Resolution', type: 'text' }
+            ];
 
-                <div class="form-group">
-                    <label class="form-label">Column Name *</label>
-                    <input type="text" class="form-input" placeholder="e.g., Priority, Severity, Team" id="columnNameInput">
-                </div>
+            // Filter out already-added columns
+            const columnsToShow = availableColumns.filter(col => !existingColumns.has(col.id));
 
-                <div class="form-group">
-                    <label class="form-label">Type *</label>
-                    <select class="form-select" id="columnTypeSelect">
-                        <option value="text">Text</option>
-                        <option value="select">Select (Dropdown)</option>
-                        <option value="number">Number</option>
-                        <option value="date">Date</option>
-                        <option value="person">Person</option>
-                        <option value="checkbox">Checkbox</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="selectOptionsGroupRail" style="display: none;">
-                    <label class="form-label">Options (one per line)</label>
-                    <textarea class="form-textarea" placeholder="High&#10;Medium&#10;Low" rows="4"></textarea>
-                    <div class="form-hint">Each option should be on a new line</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Properties</label>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <label id="allowSortCheckboxLabel" style="display: none; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
-                            <input type="checkbox" id="allowSortCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
-                            <span>Allow sorting</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
-                            <input type="checkbox" id="requiredCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
-                            <span>Required field</span>
-                        </label>
-                        <label id="counterCheckboxLabel" style="display: none; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
-                            <input type="checkbox" id="isCounterCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
-                            <span>Auto-increment counter (1, 2, 3...)</span>
-                        </label>
-                        <label id="hasDefaultValueCheckboxLabel" style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #1a1d24; cursor: pointer;">
-                            <input type="checkbox" id="hasDefaultValueCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
-                            <span>Default value (optional)</span>
-                        </label>
+            if (columnsToShow.length === 0) {
+                railContent.innerHTML = `
+                    <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Add Column</h2>
+                    <p style="color: #6b7280; margin-bottom: 20px;">All available columns have been added.</p>
+                    <div style="display: flex; gap: 12px; margin-top: 32px;">
+                        <button class="btn" onclick="closeRail()" style="flex: 1;">Close</button>
                     </div>
-                </div>
+                `;
+                rail.classList.add('open');
+                document.getElementById('rightRailBackdrop').classList.add('open');
+                return;
+            }
 
-                <div class="form-group" id="defaultValueGroup" style="display: none;">
-                    <label class="form-label">Default Value</label>
-                    <input type="text" class="form-input" id="defaultValueInput" placeholder="e.g., Medium, High Priority">
-                    <div class="form-hint">This value will be pre-filled for all existing items</div>
+            railContent.innerHTML = `
+                <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Add Column</h2>
+
+                <div class="form-group">
+                    <label class="form-label">Select Column *</label>
+                    <select class="form-select" id="columnSelect">
+                        <option value="">Choose a column...</option>
+                        ${columnsToShow.map(col => `<option value="${col.id}" data-type="${col.type}">${col.name}</option>`).join('')}
+                    </select>
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-top: 32px;">
@@ -3337,21 +3316,12 @@
             rail.classList.add('open');
             document.getElementById('rightRailBackdrop').classList.add('open');
 
-            // Re-attach event listeners for column type dropdown
-            const columnTypeSelect = document.getElementById('columnTypeSelect');
-            const optionsGroup = document.getElementById('selectOptionsGroupRail');
-            const isCounterCheckbox = document.getElementById('isCounterCheckbox');
-            const counterCheckboxLabel = document.getElementById('counterCheckboxLabel');
-            const allowSortCheckboxLabel = document.getElementById('allowSortCheckboxLabel');
-            const hasDefaultValueCheckbox = document.getElementById('hasDefaultValueCheckbox');
-            const hasDefaultValueCheckboxLabel = document.getElementById('hasDefaultValueCheckboxLabel');
-            const defaultValueGroup = document.getElementById('defaultValueGroup');
-            const columnNameInput = document.getElementById('columnNameInput');
+            // Enable/disable Add Column button based on selection
+            const columnSelect = document.getElementById('columnSelect');
             const addColumnBtn = document.getElementById('addColumnBtn');
 
-            // Enable/disable Add Column button based on column name input
-            columnNameInput.addEventListener('input', function() {
-                if (this.value.trim().length > 0) {
+            columnSelect.addEventListener('change', function() {
+                if (this.value) {
                     addColumnBtn.disabled = false;
                     addColumnBtn.style.opacity = '1';
                     addColumnBtn.style.cursor = 'pointer';
@@ -3368,134 +3338,56 @@
                 }
             });
 
-            columnTypeSelect.addEventListener('change', function() {
-                if (this.value === 'select') {
-                    optionsGroup.style.display = 'block';
-                } else {
-                    optionsGroup.style.display = 'none';
-                }
-
-                // Show allow sorting checkbox for non-text columns
-                if (this.value !== 'text') {
-                    allowSortCheckboxLabel.style.display = 'flex';
-                } else {
-                    allowSortCheckboxLabel.style.display = 'none';
-                }
-
-                // Show counter checkbox only for number type
-                if (this.value === 'number') {
-                    counterCheckboxLabel.style.display = 'flex';
-                } else {
-                    counterCheckboxLabel.style.display = 'none';
-                    isCounterCheckbox.checked = false;
-                }
-            });
-
-            // Handle counter checkbox
-            isCounterCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    hasDefaultValueCheckboxLabel.style.display = 'none';
-                    hasDefaultValueCheckbox.checked = false;
-                    defaultValueGroup.style.display = 'none';
-                } else {
-                    hasDefaultValueCheckboxLabel.style.display = 'flex';
-                }
-            });
-
-            // Handle default value checkbox
-            hasDefaultValueCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    defaultValueGroup.style.display = 'block';
-                } else {
-                    defaultValueGroup.style.display = 'none';
-                }
-            });
-
-            // Initialize visibility based on default selected type (text)
-            // Text columns don't show sorting option
-            allowSortCheckboxLabel.style.display = 'none';
-            counterCheckboxLabel.style.display = 'none';
-
-            // Reset border color on input
-            document.getElementById('columnNameInput').addEventListener('input', function() {
-                this.style.borderColor = '#d1d1d6';
-            });
-
             // Add Column button functionality
-            const addBtn = document.getElementById('addColumnBtn');
-            if (addBtn) {
-                addBtn.addEventListener('click', function() {
-                    try {
-                        const columnNameInput = document.getElementById('columnNameInput');
-                        const defaultValueInput = document.getElementById('defaultValueInput');
-                        const columnName = columnNameInput.value.trim();
-                        const columnType = columnTypeSelect.value;
-                        const defaultValue = hasDefaultValueCheckbox.checked ? defaultValueInput.value.trim() : '';
-                        const isCounter = isCounterCheckbox.checked;
+            addColumnBtn.addEventListener('click', function() {
+                try {
+                    const selectedOption = columnSelect.options[columnSelect.selectedIndex];
+                    const columnId = selectedOption.value;
+                    const columnName = selectedOption.text;
+                    const columnType = selectedOption.getAttribute('data-type');
 
-                        if (!columnName) {
-                            columnNameInput.style.borderColor = '#ef4444';
-                            columnNameInput.focus();
-                            alert('Please enter a column name');
-                            return;
-                        }
-
-                        // Add column to table header
-                        const thead = document.querySelector('thead tr');
-                        const lastTh = thead.querySelector('th:last-child');
-
-                        const newTh = document.createElement('th');
-                        newTh.className = 'custom-column-header';
-                        newTh.style.width = '150px';
-
-                        newTh.innerHTML = `
-                            <span style="display: inline-flex; align-items: center; gap: 4px;">
-                                <span>${columnName}</span>
-                                <span class="column-edit-icon">⚙</span>
-                            </span>
-                        `;
-
-                        newTh.setAttribute('data-column-name', columnName);
-                        newTh.setAttribute('data-column-type', columnType);
-                        newTh.setAttribute('data-default-value', defaultValue);
-                        newTh.setAttribute('data-is-counter', isCounter);
-                        newTh.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            openColumnEditView(this);
-                        });
-
-                        thead.insertBefore(newTh, lastTh);
-
-                        // Add cells to all rows
-                        const rows = document.querySelectorAll('tbody tr');
-                        rows.forEach((row, index) => {
-                            const newTd = document.createElement('td');
-                            // Populate with counter if enabled, otherwise use default value
-                            if (isCounter) {
-                                newTd.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${index + 1}</span>`;
-                            } else if (defaultValue) {
-                                newTd.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${defaultValue}</span>`;
-                            } else {
-                                newTd.innerHTML = '';
-                            }
-                            newTd.style.cursor = 'pointer';
-                            newTd.setAttribute('data-column-type', columnType);
-                            newTd.addEventListener('click', function(e) {
-                                e.stopPropagation();
-                                editCustomCell(this, columnType);
-                            });
-                            const lastTd = row.querySelector('td:last-child');
-                            row.insertBefore(newTd, lastTd);
-                        });
-
-                        closeRail();
-                        updateAddColumnButton();
-                    } catch (error) {
-                        console.error('Error adding column:', error);
-                        alert('Error adding column: ' + error.message);
+                    if (!columnId) {
+                        alert('Please select a column');
+                        return;
                     }
-                });
-            }
+
+                    // Add column to table header
+                    const thead = document.querySelector('thead tr');
+                    const lastTh = thead.querySelector('th:last-child');
+
+                    const newTh = document.createElement('th');
+                    newTh.className = 'custom-column-header';
+                    newTh.style.width = '180px';
+                    newTh.textContent = columnName;
+                    newTh.setAttribute('data-column-id', columnId);
+                    newTh.setAttribute('data-column-name', columnName);
+                    newTh.setAttribute('data-column-type', columnType);
+
+                    thead.insertBefore(newTh, lastTh);
+
+                    // Add cells to all rows
+                    const rows = document.querySelectorAll('tbody tr');
+                    rows.forEach((row) => {
+                        const newTd = document.createElement('td');
+                        newTd.innerHTML = '';
+                        newTd.style.cursor = 'pointer';
+                        newTd.setAttribute('data-column-type', columnType);
+                        newTd.setAttribute('data-column-id', columnId);
+                        newTd.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            editCustomCell(this, columnType);
+                        });
+                        const lastTd = row.querySelector('td:last-child');
+                        row.insertBefore(newTd, lastTd);
+                    });
+
+                    closeRail();
+                    updateAddColumnButton();
+                } catch (error) {
+                    console.error('Error adding column:', error);
+                    alert('Error adding column: ' + error.message);
+                }
+            });
         }
 
         // Update add column button visibility based on column count
@@ -3503,14 +3395,15 @@
             const addColumnIcon = document.getElementById('addColumnIcon');
             const existingCustomColumns = document.querySelectorAll('.custom-column-header');
 
-            if (existingCustomColumns.length >= 10) {
+            // Max 3 columns (expected completion, owner/assignee, issue resolution)
+            if (existingCustomColumns.length >= 3) {
                 addColumnIcon.style.opacity = '0.3';
                 addColumnIcon.style.cursor = 'not-allowed';
-                addColumnIcon.title = 'Maximum 10 columns reached';
+                addColumnIcon.title = 'All columns added';
             } else {
                 addColumnIcon.style.opacity = '1';
                 addColumnIcon.style.cursor = 'pointer';
-                addColumnIcon.title = 'Add custom column';
+                addColumnIcon.title = 'Add column';
             }
         };
 
