@@ -2843,7 +2843,8 @@
                 addColumnIcon.addEventListener('click', function(e) {
                     e.stopPropagation();
                     console.log('Add column clicked');
-                    window.openColumnCustomizerRail();
+                    // Open manage columns rail (pass null since we're not clicking a specific column)
+                    window.openColumnManagementRail(null);
                 });
             }
         });
@@ -3254,148 +3255,9 @@
             document.getElementById('statusConfigModal').classList.remove('open');
         };
 
-        // Open right rail for column customization
+        // Legacy function - redirects to new unified management rail
         window.openColumnCustomizerRail = function() {
-            console.log('openColumnCustomizerRail called');
-
-            // Check which columns are already added
-            const existingColumns = new Set();
-            document.querySelectorAll('.custom-column-header').forEach(th => {
-                existingColumns.add(th.getAttribute('data-column-id'));
-            });
-
-            const rail = document.getElementById('rightRail');
-            const railContent = document.querySelector('.rail-content');
-
-            if (!rail || !railContent) {
-                console.error('Rail or railContent not found');
-                alert('Error: Could not find rail elements');
-                return;
-            }
-
-            // Define available columns
-            const availableColumns = [
-                { id: 'expected-completion', name: 'Expected Completion Date', type: 'date' },
-                { id: 'owner-assignee', name: 'Owner/Assignee', type: 'person' },
-                { id: 'issue-resolution', name: 'Issue Resolution', type: 'text' }
-            ];
-
-            // Filter out already-added columns
-            const columnsToShow = availableColumns.filter(col => !existingColumns.has(col.id));
-
-            if (columnsToShow.length === 0) {
-                railContent.innerHTML = `
-                    <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Add Column</h2>
-                    <p style="color: #6b7280; margin-bottom: 20px;">All available columns have been added.</p>
-                    <div style="display: flex; gap: 12px; margin-top: 32px;">
-                        <button class="btn" onclick="closeRail()" style="flex: 1;">Close</button>
-                    </div>
-                `;
-                rail.classList.add('open');
-                document.getElementById('rightRailBackdrop').classList.add('open');
-                return;
-            }
-
-            railContent.innerHTML = `
-                <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Add Column</h2>
-
-                <div class="form-group">
-                    <label class="form-label">Select Column *</label>
-                    <select class="form-select" id="columnSelect">
-                        <option value="">Choose a column...</option>
-                        ${columnsToShow.map(col => `<option value="${col.id}" data-type="${col.type}">${col.name}</option>`).join('')}
-                    </select>
-                </div>
-
-                <div style="display: flex; gap: 12px; margin-top: 32px;">
-                    <button class="btn" onclick="closeRail()" style="flex: 1;">Cancel</button>
-                    <button class="btn btn-primary" id="addColumnBtn" style="flex: 1; opacity: 0.5; cursor: not-allowed;" disabled>Add Column</button>
-                </div>
-            `;
-
-            rail.classList.add('open');
-            document.getElementById('rightRailBackdrop').classList.add('open');
-
-            // Enable/disable Add Column button based on selection
-            const columnSelect = document.getElementById('columnSelect');
-            const addColumnBtn = document.getElementById('addColumnBtn');
-
-            columnSelect.addEventListener('change', function() {
-                if (this.value) {
-                    addColumnBtn.disabled = false;
-                    addColumnBtn.style.opacity = '1';
-                    addColumnBtn.style.cursor = 'pointer';
-                    addColumnBtn.style.background = '#1a1d24';
-                    addColumnBtn.style.color = '#fff';
-                    addColumnBtn.style.borderColor = '#1a1d24';
-                } else {
-                    addColumnBtn.disabled = true;
-                    addColumnBtn.style.opacity = '0.5';
-                    addColumnBtn.style.cursor = 'not-allowed';
-                    addColumnBtn.style.background = '#fff';
-                    addColumnBtn.style.color = '#666';
-                    addColumnBtn.style.borderColor = '#d1d1d6';
-                }
-            });
-
-            // Add Column button functionality
-            addColumnBtn.addEventListener('click', function() {
-                try {
-                    const selectedOption = columnSelect.options[columnSelect.selectedIndex];
-                    const columnId = selectedOption.value;
-                    const columnName = selectedOption.text;
-                    const columnType = selectedOption.getAttribute('data-type');
-
-                    if (!columnId) {
-                        alert('Please select a column');
-                        return;
-                    }
-
-                    // Add column to table header
-                    const thead = document.querySelector('thead tr');
-                    const lastTh = thead.querySelector('th:last-child');
-
-                    const newTh = document.createElement('th');
-                    newTh.className = 'custom-column-header';
-                    newTh.style.width = '180px';
-                    newTh.style.position = 'relative';
-                    newTh.style.cursor = 'pointer';
-                    newTh.textContent = columnName;
-                    newTh.setAttribute('data-column-id', columnId);
-                    newTh.setAttribute('data-column-name', columnName);
-                    newTh.setAttribute('data-column-type', columnType);
-
-                    // Click to open column management rail
-                    newTh.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        openColumnManagementRail(this);
-                    });
-
-                    thead.insertBefore(newTh, lastTh);
-
-                    // Add cells to all rows
-                    const rows = document.querySelectorAll('tbody tr');
-                    rows.forEach((row) => {
-                        const newTd = document.createElement('td');
-                        newTd.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
-                        newTd.style.cursor = 'pointer';
-                        newTd.setAttribute('data-column-type', columnType);
-                        newTd.setAttribute('data-column-id', columnId);
-                        newTd.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            editCustomCell(this, columnType);
-                        });
-                        const lastTd = row.querySelector('td:last-child');
-                        row.insertBefore(newTd, lastTd);
-                    });
-
-                    closeRail();
-                    updateAddColumnButton();
-                } catch (error) {
-                    console.error('Error adding column:', error);
-                    alert('Error adding column: ' + error.message);
-                }
-            });
+            window.openColumnManagementRail(null);
         }
 
         // Update add column button visibility based on column count
