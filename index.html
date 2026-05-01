@@ -3362,12 +3362,31 @@
                     newTh.innerHTML = `
                         <span style="display: inline-flex; align-items: center; gap: 6px;">
                             ${columnName}
-                            <span class="delete-column-icon" style="opacity: 0.4; cursor: pointer; font-size: 12px; transition: opacity 0.2s;"
-                                  onmouseover="this.style.opacity='1'"
-                                  onmouseout="this.style.opacity='0.4'"
+                            <span class="delete-column-icon" style="opacity: 0; cursor: pointer; font-size: 12px; transition: opacity 0.2s;"
                                   onclick="event.stopPropagation(); deleteColumn(this.closest('th'));">✕</span>
                         </span>
                     `;
+
+                    // Show delete icon on hover
+                    newTh.addEventListener('mouseenter', function() {
+                        const icon = this.querySelector('.delete-column-icon');
+                        if (icon) icon.style.opacity = '0.6';
+                    });
+                    newTh.addEventListener('mouseleave', function() {
+                        const icon = this.querySelector('.delete-column-icon');
+                        if (icon) icon.style.opacity = '0';
+                    });
+
+                    // Hover effect for the delete icon itself
+                    const deleteIconSetup = function(th) {
+                        const icon = th.querySelector('.delete-column-icon');
+                        if (icon) {
+                            icon.addEventListener('mouseenter', function() {
+                                this.style.opacity = '1';
+                            });
+                        }
+                    };
+                    setTimeout(() => deleteIconSetup(newTh), 0);
                     newTh.setAttribute('data-column-id', columnId);
                     newTh.setAttribute('data-column-name', columnName);
                     newTh.setAttribute('data-column-type', columnType);
