@@ -3369,7 +3369,7 @@
                     const rows = document.querySelectorAll('tbody tr');
                     rows.forEach((row) => {
                         const newTd = document.createElement('td');
-                        newTd.innerHTML = '';
+                        newTd.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                         newTd.style.cursor = 'pointer';
                         newTd.setAttribute('data-column-type', columnType);
                         newTd.setAttribute('data-column-id', columnId);
@@ -3409,7 +3409,8 @@
 
         // Edit custom cell function
         window.editCustomCell = function(td, columnType) {
-            const currentValue = td.textContent.trim();
+            const rawValue = td.textContent.trim();
+            const currentValue = rawValue === '—' ? '' : rawValue;
 
             if (columnType === 'text') {
                 const input = document.createElement('input');
@@ -3421,14 +3422,14 @@
                     if (newValue) {
                         td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${newValue}</span>`;
                     } else {
-                        td.innerHTML = '';
+                        td.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         this.blur();
                     } else if (e.key === 'Escape') {
-                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 td.innerHTML = '';
@@ -3444,14 +3445,14 @@
                     if (newValue) {
                         td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${newValue}</span>`;
                     } else {
-                        td.innerHTML = '';
+                        td.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         this.blur();
                     } else if (e.key === 'Escape') {
-                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 td.innerHTML = '';
@@ -3470,12 +3471,12 @@
                         const formatted = date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
                         td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${formatted}</span>`;
                     } else {
-                        td.innerHTML = '';
+                        td.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') {
-                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 td.innerHTML = '';
@@ -3488,7 +3489,7 @@
                 if (newState) {
                     td.innerHTML = '<span style="font-size: 16px; color: #10b981;">✓</span>';
                 } else {
-                    td.innerHTML = '';
+                    td.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                 }
             } else {
                 // For select, person, and other types, just show a simple text input for now
@@ -3501,14 +3502,14 @@
                     if (newValue) {
                         td.innerHTML = `<span style="font-size: 13px; color: #1a1d24;">${newValue}</span>`;
                     } else {
-                        td.innerHTML = '';
+                        td.innerHTML = '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         this.blur();
                     } else if (e.key === 'Escape') {
-                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '';
+                        td.innerHTML = currentValue ? `<span style="font-size: 13px; color: #1a1d24;">${currentValue}</span>` : '<span style="color: #d1d5db; font-size: 13px;">—</span>';
                     }
                 });
                 td.innerHTML = '';
