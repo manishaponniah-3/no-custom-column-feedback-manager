@@ -1561,7 +1561,7 @@
                                 Status
                                 <span class="settings-icon" onclick="event.stopPropagation(); openStatusConfig()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.4; filter: grayscale(100%);">✏️</span>
                             </th>
-                            <th>Title</th>
+                            <th class="sortable" id="priorityHeader">Title</th>
                             <th style="width: 200px;">Reporter</th>
                             <th style="width: 180px; position: relative;" id="agentHeader">
                                 AI Agent
@@ -2895,11 +2895,13 @@
         // Sort functionality
         let statusSortDir = 0; // 0 = no sort, 1 = ascending, -1 = descending
         let dateSortDir = 1;
+        let prioritySortDir = 0;
         let originalRowOrder = [];
 
         window.addEventListener('load', function() {
             const statusHeader = document.getElementById('statusHeader');
             const createdHeader = document.getElementById('createdHeader');
+            const priorityHeader = document.getElementById('priorityHeader');
 
             // Store original row order
             const tbody = document.querySelector('tbody');
@@ -2984,6 +2986,53 @@
                 createdHeader.classList.add(dateSortDir === 1 ? 'sorted-asc' : 'sorted-desc');
 
                 dateSortDir *= -1;
+            });
+
+            // Sort by priority
+            priorityHeader.addEventListener('click', function(e) {
+                const tbody = document.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr.feedback-row'));
+
+                // Cycle through sort states: 0 -> 1 -> -1 -> 0
+                if (prioritySortDir === 0) {
+                    prioritySortDir = 1; // ascending (P0 -> P3, urgent first)
+                } else if (prioritySortDir === 1) {
+                    prioritySortDir = -1; // descending (P3 -> P0, low first)
+                } else {
+                    prioritySortDir = 0; // back to no sort
+                }
+
+                if (prioritySortDir === 0) {
+                    // Restore original order
+                    tbody.innerHTML = '';
+                    originalRowOrder.forEach(row => tbody.appendChild(row));
+                    priorityHeader.classList.remove('sorted-asc', 'sorted-desc');
+                } else {
+                    // Sort by priority (p0=0, p1=1, p2=2, p3=3)
+                    const priorityOrder = {
+                        'p0': 0,
+                        'p1': 1,
+                        'p2': 2,
+                        'p3': 3
+                    };
+
+                    rows.sort((a, b) => {
+                        const priorityA = a.getAttribute('data-priority') || 'p2';
+                        const priorityB = b.getAttribute('data-priority') || 'p2';
+                        return (priorityOrder[priorityA] - priorityOrder[priorityB]) * prioritySortDir;
+                    });
+
+                    tbody.innerHTML = '';
+                    rows.forEach(row => tbody.appendChild(row));
+
+                    // Update header classes
+                    priorityHeader.classList.remove('sorted-asc', 'sorted-desc');
+                    priorityHeader.classList.add(prioritySortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+                }
+
+                // Reset other headers
+                statusHeader.classList.remove('sorted-asc', 'sorted-desc');
+                createdHeader.classList.remove('sorted-asc', 'sorted-desc');
             });
         });
 
