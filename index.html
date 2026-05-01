@@ -3359,37 +3359,17 @@
                     newTh.className = 'custom-column-header';
                     newTh.style.width = '180px';
                     newTh.style.position = 'relative';
-                    newTh.innerHTML = `
-                        <span style="display: inline-flex; align-items: center; gap: 6px;">
-                            ${columnName}
-                            <span class="delete-column-icon" style="opacity: 0; cursor: pointer; font-size: 12px; transition: opacity 0.2s;"
-                                  onclick="event.stopPropagation(); deleteColumn(this.closest('th'));">✕</span>
-                        </span>
-                    `;
-
-                    // Show delete icon on hover
-                    newTh.addEventListener('mouseenter', function() {
-                        const icon = this.querySelector('.delete-column-icon');
-                        if (icon) icon.style.opacity = '0.6';
-                    });
-                    newTh.addEventListener('mouseleave', function() {
-                        const icon = this.querySelector('.delete-column-icon');
-                        if (icon) icon.style.opacity = '0';
-                    });
-
-                    // Hover effect for the delete icon itself
-                    const deleteIconSetup = function(th) {
-                        const icon = th.querySelector('.delete-column-icon');
-                        if (icon) {
-                            icon.addEventListener('mouseenter', function() {
-                                this.style.opacity = '1';
-                            });
-                        }
-                    };
-                    setTimeout(() => deleteIconSetup(newTh), 0);
+                    newTh.style.cursor = 'pointer';
+                    newTh.textContent = columnName;
                     newTh.setAttribute('data-column-id', columnId);
                     newTh.setAttribute('data-column-name', columnName);
                     newTh.setAttribute('data-column-type', columnType);
+
+                    // Click to open column management rail
+                    newTh.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        openColumnManagementRail(this);
+                    });
 
                     thead.insertBefore(newTh, lastTh);
 
@@ -3435,7 +3415,92 @@
             }
         };
 
-        // Delete column function
+        // Open column management rail
+        window.openColumnManagementRail = function(th) {
+            const columnName = th.getAttribute('data-column-name');
+            const columnId = th.getAttribute('data-column-id');
+            const columnType = th.getAttribute('data-column-type');
+
+            const rail = document.getElementById('rightRail');
+            const railContent = document.querySelector('.rail-content');
+
+            if (!rail || !railContent) {
+                console.error('Rail or railContent not found');
+                return;
+            }
+
+            // Get all existing columns
+            const existingColumns = [];
+            document.querySelectorAll('.custom-column-header').forEach(header => {
+                existingColumns.push({
+                    id: header.getAttribute('data-column-id'),
+                    name: header.getAttribute('data-column-name'),
+                    element: header
+                });
+            });
+
+            railContent.innerHTML = `
+                <h2 style="font-size: 18px; font-weight: 600; color: #1a1d24; margin-bottom: 20px; flex-shrink: 0;">Manage Columns</h2>
+
+                <div class="form-group">
+                    <label class="form-label">Active Columns</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        ${existingColumns.map(col => `
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;">
+                                <span style="font-size: 14px; color: #1a1d24;">${col.name}</span>
+                                <button class="btn" style="padding: 4px 10px; font-size: 12px; background: #fff; color: #ef4444; border-color: #fecaca;"
+                                        onclick="deleteColumnFromRail('${col.id}')">Remove</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 32px;">
+                    <button class="btn" onclick="closeRail()" style="flex: 1;">Close</button>
+                </div>
+            `;
+
+            rail.classList.add('open');
+            document.getElementById('rightRailBackdrop').classList.add('open');
+        };
+
+        // Delete column from rail
+        window.deleteColumnFromRail = function(columnId) {
+            if (!confirm('Remove this column? All data in this column will be lost.')) {
+                return;
+            }
+
+            const th = document.querySelector(`th.custom-column-header[data-column-id="${columnId}"]`);
+            if (th) {
+                const columnIndex = Array.from(th.parentNode.children).indexOf(th);
+
+                // Remove the header
+                th.remove();
+
+                // Remove corresponding cells from all rows
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells[columnIndex]) {
+                        cells[columnIndex].remove();
+                    }
+                });
+
+                // Update the add column button state
+                updateAddColumnButton();
+
+                // Close rail if no more columns
+                const remainingColumns = document.querySelectorAll('.custom-column-header');
+                if (remainingColumns.length === 0) {
+                    closeRail();
+                } else {
+                    // Refresh the rail to show updated list
+                    openColumnManagementRail(remainingColumns[0]);
+                }
+            }
+        };
+
+        // Delete column function (legacy, kept for compatibility)
         window.deleteColumn = function(th) {
             if (!confirm('Delete this column? All data in this column will be lost.')) {
                 return;
