@@ -2628,8 +2628,8 @@
             ).join('');
 
             editor.innerHTML = `
-                <input type="text" class="tags-input" placeholder="Add tag and press Enter..." />
-                <div class="tags-hint" style="font-size: 11px; color: #999; margin-bottom: 8px;">Press Enter to add, Esc to close</div>
+                <input type="text" class="tags-input" placeholder="Type to filter or create new tag..." />
+                <div class="tags-hint" style="font-size: 11px; color: #999; margin-bottom: 8px;">Start typing to filter • Press Enter to add • Esc to close</div>
                 <div class="suggested-tags">
                     ${suggestedTagsHTML}
                 </div>
@@ -2639,7 +2639,43 @@
             currentTagsEditor = editor;
 
             const input = editor.querySelector('.tags-input');
+            const suggestedTagsContainer = editor.querySelector('.suggested-tags');
             input.focus();
+
+            // Filter tags as user types
+            function updateSuggestedTags() {
+                const searchTerm = input.value.trim().toLowerCase();
+                let filteredTags = savedTagTypes;
+
+                if (searchTerm) {
+                    // Show tags that match the search term
+                    filteredTags = savedTagTypes.filter(tag =>
+                        tag.toLowerCase().includes(searchTerm)
+                    );
+                } else {
+                    // Show max 12 tags when no search term
+                    filteredTags = savedTagTypes.slice(0, 12);
+                }
+
+                // Update the suggested tags display
+                suggestedTagsContainer.innerHTML = filteredTags
+                    .map(tag => `<div class="suggested-tag">${tag}</div>`)
+                    .join('');
+
+                // Re-attach click handlers
+                suggestedTagsContainer.querySelectorAll('.suggested-tag').forEach(tag => {
+                    tag.addEventListener('click', function() {
+                        const tagText = this.textContent;
+                        addTag(feedbackId, tagText, container);
+                        input.value = '';
+                        updateSuggestedTags();
+                        input.focus();
+                    });
+                });
+            }
+
+            // Handle input changes for filtering
+            input.addEventListener('input', updateSuggestedTags);
 
             // Handle Enter key to add tag
             input.addEventListener('keydown', function(e) {
@@ -2649,6 +2685,7 @@
                     if (tagText) {
                         addTag(feedbackId, tagText, container);
                         this.value = '';
+                        updateSuggestedTags();
                     }
                 } else if (e.key === 'Escape') {
                     editor.remove();
@@ -2656,14 +2693,8 @@
                 }
             });
 
-            // Handle suggested tag clicks
-            editor.querySelectorAll('.suggested-tag').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    const tagText = this.textContent;
-                    addTag(feedbackId, tagText, container);
-                    input.focus();
-                });
-            });
+            // Initial setup of suggested tag clicks
+            updateSuggestedTags();
 
             // Close editor when clicking outside
             function closeEditorOnClickOutside(e) {
