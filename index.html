@@ -2583,6 +2583,20 @@
         let currentTagsEditor = null;
         const allTags = {}; // Store tags per feedback ID
 
+        // Load saved tag types from localStorage
+        let savedTagTypes = JSON.parse(localStorage.getItem('savedTagTypes') || '["bug", "enhancement", "urgent", "needs-review"]');
+
+        function saveTagTypes() {
+            localStorage.setItem('savedTagTypes', JSON.stringify(savedTagTypes));
+        }
+
+        function addTagType(tagName) {
+            if (!savedTagTypes.includes(tagName)) {
+                savedTagTypes.push(tagName);
+                saveTagTypes();
+            }
+        }
+
         window.openTagsEditor = function(container, event) {
             // Prevent row click from opening the right rail
             event.stopPropagation();
@@ -2609,14 +2623,15 @@
 
             const currentTags = allTags[feedbackId] || [];
 
+            const suggestedTagsHTML = savedTagTypes.map(tag =>
+                `<div class="suggested-tag">${tag}</div>`
+            ).join('');
+
             editor.innerHTML = `
                 <input type="text" class="tags-input" placeholder="Add tag and press Enter..." />
                 <div class="tags-hint" style="font-size: 11px; color: #999; margin-bottom: 8px;">Press Enter to add, Esc to close</div>
                 <div class="suggested-tags">
-                    <div class="suggested-tag">bug</div>
-                    <div class="suggested-tag">enhancement</div>
-                    <div class="suggested-tag">urgent</div>
-                    <div class="suggested-tag">needs-review</div>
+                    ${suggestedTagsHTML}
                 </div>
             `;
 
@@ -2674,6 +2689,10 @@
             }
 
             allTags[feedbackId].push(tagText);
+
+            // Save this tag type for future use
+            addTagType(tagText);
+
             renderTags(feedbackId, container);
         }
 
