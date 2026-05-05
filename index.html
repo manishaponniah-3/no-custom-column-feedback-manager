@@ -1692,6 +1692,7 @@
                         <thead>
                         <tr>
                             <th class="sortable" id="titleHeader">Title</th>
+                            <th style="width: 80px; text-align: center;">Priority</th>
                             <th style="width: 200px;">Reporter</th>
                             <th class="sortable" id="statusHeader" style="width: 140px; position: relative;">
                                 Status
@@ -1723,7 +1724,8 @@
                     </thead>
                     <tbody>
                         <tr class="feedback-row" data-id="1" data-priority="p0">
-                            <td><span class="priority-badge priority-p0"></span><a href="#" class="title-link" data-id="1">Agent picks wrong product SKU</a></td>
+                            <td><a href="#" class="title-link" data-id="1">Agent picks wrong product SKU</a></td>
+                            <td style="text-align: center;"><span class="priority-badge priority-p0"></span></td>
                             <td class="email">manisha.ponniah@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
@@ -1765,7 +1767,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="2" data-priority="p2">
-                            <td><span class="priority-badge priority-p2"></span><a href="#" class="title-link" data-id="2">Tone sounds robotic in greetings</a></td>
+                            <td><a href="#" class="title-link" data-id="2">Tone sounds robotic in greetings</a></td>
+                            <td style="text-align: center;"><span class="priority-badge priority-p2"></span></td>
                             <td class="email">john.doe@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
@@ -1807,7 +1810,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="3" data-priority="p1">
-                            <td><span class="priority-badge priority-p1"></span><a href="#" class="title-link" data-id="3">Missing context on pricing</a></td>
+                            <td><a href="#" class="title-link" data-id="3">Missing context on pricing</a></td>
+                            <td style="text-align: center;"><span class="priority-badge priority-p1"></span></td>
                             <td class="email">sarah.jones@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
@@ -1849,7 +1853,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="4" data-priority="p2">
-                            <td><span class="priority-badge priority-p2"></span><a href="#" class="title-link" data-id="4">Escalation trigger too sensitive</a></td>
+                            <td><a href="#" class="title-link" data-id="4">Escalation trigger too sensitive</a></td>
+                            <td style="text-align: center;"><span class="priority-badge priority-p2"></span></td>
                             <td class="email">mike.chen@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
@@ -1891,7 +1896,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="5" data-priority="p3">
-                            <td><span class="priority-badge priority-p3"></span><a href="#" class="title-link" data-id="5">Incorrect hours of operation</a></td>
+                            <td><a href="#" class="title-link" data-id="5">Incorrect hours of operation</a></td>
+                            <td style="text-align: center;"><span class="priority-badge priority-p3"></span></td>
                             <td class="email">amy.park@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
@@ -1933,7 +1939,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="6" data-priority="p3">
-                            <td><span class="priority-badge priority-p3"></span><a href="#" class="title-link" data-id="6">Agent repeats customer question</a></td>
+                            <td><a href="#" class="title-link" data-id="6">Agent repeats customer question</a></td>
+                            <td style="text-align: center;"><span class="priority-badge priority-p3"></span></td>
                             <td class="email">james.wilson@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
@@ -1975,7 +1982,8 @@
                             <td></td>
                         </tr>
                         <tr class="feedback-row" data-id="7" data-priority="p1">
-                            <td><span class="priority-badge priority-p1"></span><a href="#" class="title-link" data-id="7">Agent provides incorrect pricing information</a></td>
+                            <td><a href="#" class="title-link" data-id="7">Agent provides incorrect pricing information</a></td>
+                            <td style="text-align: center;"><span class="priority-badge priority-p1"></span></td>
                             <td class="email">emily.davis@cresta.ai</td>
                             <td>
                                 <div class="status-wrapper">
@@ -2540,7 +2548,7 @@
             const agents = new Set();
 
             rows.forEach(row => {
-                const agentCell = row.cells[3]; // AI Agent is the 4th column (index 3)
+                const agentCell = row.cells[4]; // AI Agent is the 5th column (index 4)
                 if (agentCell) {
                     const agentName = agentCell.textContent.trim();
                     if (agentName) {
@@ -2589,7 +2597,7 @@
 
             const rows = document.querySelectorAll('.feedback-row');
             rows.forEach(row => {
-                const agentCell = row.cells[3]; // AI Agent is the 4th column (index 3)
+                const agentCell = row.cells[4]; // AI Agent is the 5th column (index 4)
                 if (!agentCell) return;
 
                 const agentName = agentCell.textContent.trim();
