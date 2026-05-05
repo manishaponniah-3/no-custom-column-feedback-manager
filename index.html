@@ -1490,25 +1490,29 @@
 
         .suggested-tags {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
+            flex-direction: column;
+            gap: 2px;
             margin-top: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e5ea;
+            border-radius: 4px;
+            padding: 4px;
         }
 
         .suggested-tag {
-            padding: 4px 8px;
-            background: #f5f5f7;
-            border: 1px solid #d1d1d6;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 3px;
+            font-size: 13px;
             color: #1a1d24;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            text-align: left;
         }
 
         .suggested-tag:hover {
-            background: #e8e8ea;
-            border-color: #a0a0a8;
+            background: #f5f5f7;
         }
 
         /* Pagination */
@@ -1664,7 +1668,16 @@
                                     </div>
                                 </div>
                             </th>
-                            <th style="width: 200px;">Tags</th>
+                            <th style="width: 200px; position: relative;" id="tagsHeader">
+                                Tags
+                                <span class="settings-icon" onclick="event.stopPropagation(); toggleTagsFilter()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); opacity: 0.7; cursor: pointer; font-size: 14px; color: #666;">▾</span>
+                                <div class="agent-filter-dropdown" id="tagsFilterDropdown" style="display: none;">
+                                    <div class="agent-filter-option" onclick="filterByTags('all')" style="border-bottom: 1px solid #e5e5ea; padding-bottom: 8px; margin-bottom: 8px;">
+                                        <span>All Items</span>
+                                    </div>
+                                    <div id="tagsFilterOptions"></div>
+                                </div>
+                            </th>
                             <th class="sortable" id="createdHeader" style="width: 110px;">Created</th>
                             <th style="width: 180px;">Actions</th>
                             <th style="width: 40px; text-align: center;"><span class="settings-icon" id="addColumnIcon" style="cursor: pointer; font-size: 18px;">+</span></th>
@@ -2579,6 +2592,111 @@
             }
         }
 
+        // Tags filter
+        let selectedTagFilters = [];
+
+        window.toggleTagsFilter = function() {
+            const dropdown = document.getElementById('tagsFilterDropdown');
+            if (!dropdown) return;
+
+            // Close agent filter
+            const agentDropdown = document.getElementById('agentFilterDropdown');
+            if (agentDropdown) agentDropdown.classList.remove('open');
+
+            // Populate the tags filter options
+            populateTagsFilter();
+
+            // Toggle this dropdown
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
+        };
+
+        function populateTagsFilter() {
+            const container = document.getElementById('tagsFilterOptions');
+            if (!container) return;
+
+            // Get all unique tags from savedTagTypes
+            const uniqueTags = [...new Set(savedTagTypes)].sort();
+
+            container.innerHTML = uniqueTags.map(tag => `
+                <div class="agent-filter-option" onclick="toggleTagSelection('${tag}')" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="tag-filter-${tag}" ${selectedTagFilters.includes(tag) ? 'checked' : ''} style="pointer-events: none;" />
+                    <span>${tag}</span>
+                </div>
+            `).join('');
+        }
+
+        window.toggleTagSelection = function(tag) {
+            const checkbox = document.getElementById(`tag-filter-${tag}`);
+            if (!checkbox) return;
+
+            if (selectedTagFilters.includes(tag)) {
+                selectedTagFilters = selectedTagFilters.filter(t => t !== tag);
+            } else {
+                selectedTagFilters.push(tag);
+            }
+
+            checkbox.checked = selectedTagFilters.includes(tag);
+
+            // Apply filter
+            filterByTags();
+            updateTagsFilterIcon();
+        };
+
+        window.filterByTags = function(mode) {
+            if (mode === 'all') {
+                selectedTagFilters = [];
+                const dropdown = document.getElementById('tagsFilterDropdown');
+                if (dropdown) dropdown.style.display = 'none';
+            }
+
+            const rows = document.querySelectorAll('.feedback-row');
+            rows.forEach(row => {
+                // Check if should be visible based on agent filter
+                const agentCell = row.cells[3];
+                const agentVisible = currentAgentFilter === 'all' || (agentCell && agentCell.textContent.trim() === currentAgentFilter);
+
+                if (!agentVisible) {
+                    row.style.display = 'none';
+                    return;
+                }
+
+                // Check tags filter
+                if (selectedTagFilters.length === 0) {
+                    row.style.display = '';
+                    return;
+                }
+
+                const feedbackId = row.getAttribute('data-id');
+                const feedbackTags = allTags[feedbackId] || [];
+
+                // Show row if it has ANY of the selected tags
+                const hasMatchingTag = selectedTagFilters.some(tag => feedbackTags.includes(tag));
+                row.style.display = hasMatchingTag ? '' : 'none';
+            });
+
+            updateTagsFilterIcon();
+        };
+
+        function updateTagsFilterIcon() {
+            const header = document.getElementById('tagsHeader');
+            if (!header) return;
+
+            const icon = header.querySelector('.settings-icon');
+            if (!icon) return;
+
+            if (selectedTagFilters.length === 0) {
+                icon.style.opacity = '0.7';
+                icon.style.color = '#666';
+            } else {
+                icon.style.opacity = '1';
+                icon.style.color = '#3b82f6';
+            }
+        }
+
         // Tags functionality
         let currentTagsEditor = null;
         const allTags = {}; // Store tags per feedback ID
@@ -2725,12 +2843,22 @@
             addTagType(tagText);
 
             renderTags(feedbackId, container);
+
+            // Reapply tags filter if active
+            if (selectedTagFilters.length > 0) {
+                filterByTags();
+            }
         }
 
         function removeTag(feedbackId, tagText, container) {
             if (allTags[feedbackId]) {
                 allTags[feedbackId] = allTags[feedbackId].filter(t => t !== tagText);
                 renderTags(feedbackId, container);
+
+                // Reapply tags filter if active
+                if (selectedTagFilters.length > 0) {
+                    filterByTags();
+                }
             }
         }
 
