@@ -1417,6 +1417,100 @@
             min-height: 20px;
         }
 
+        /* Tags */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            min-height: 24px;
+            cursor: pointer;
+            padding: 4px;
+            position: relative;
+        }
+
+        .tags-container:empty::before {
+            content: '+ Add tags';
+            color: #999;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .tags-container:hover {
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #e8e8ea;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1a1d24;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            line-height: 1;
+        }
+
+        .tag-remove:hover {
+            color: #dc3545;
+        }
+
+        .tags-editor {
+            position: absolute;
+            background: white;
+            border: 1px solid #d1d1d6;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            min-width: 250px;
+        }
+
+        .tags-input {
+            width: 100%;
+            padding: 8px;
+            border: 1.5px solid #d1d1d6;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .tags-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .suggested-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .suggested-tag {
+            padding: 4px 8px;
+            background: #f5f5f7;
+            border: 1px solid #d1d1d6;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1a1d24;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggested-tag:hover {
+            background: #e8e8ea;
+            border-color: #a0a0a8;
+        }
+
         /* Pagination */
         .pagination-container {
             display: flex;
@@ -1570,6 +1664,7 @@
                                     </div>
                                 </div>
                             </th>
+                            <th style="width: 200px;">Tags</th>
                             <th class="sortable" id="createdHeader" style="width: 110px;">Created</th>
                             <th style="width: 180px;">Actions</th>
                             <th style="width: 40px; text-align: center;"><span class="settings-icon" id="addColumnIcon" style="cursor: pointer; font-size: 18px;">+</span></th>
@@ -1606,6 +1701,9 @@
                                 </div>
                             </td>
                             <td>Guitar Center Voice Agent</td>
+                            <td class="tags-cell" data-feedback-id="1">
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
+                            </td>
                             <td style="white-space: nowrap;">04/18/2026</td>
                             <td>
                                 <div class="actions">
@@ -1645,6 +1743,9 @@
                                 </div>
                             </td>
                             <td>Guitar Center Voice Agent</td>
+                            <td class="tags-cell" data-feedback-id="2">
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
+                            </td>
                             <td style="white-space: nowrap;">04/19/2026</td>
                             <td>
                                 <div class="actions">
@@ -1684,6 +1785,9 @@
                                 </div>
                             </td>
                             <td>Guitar Center Voice Agent</td>
+                            <td class="tags-cell" data-feedback-id="3">
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
+                            </td>
                             <td style="white-space: nowrap;">04/17/2026</td>
                             <td>
                                 <div class="actions">
@@ -1723,6 +1827,9 @@
                                 </div>
                             </td>
                             <td>Guitar Center Voice Agent</td>
+                            <td class="tags-cell" data-feedback-id="4">
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
+                            </td>
                             <td style="white-space: nowrap;">04/16/2026</td>
                             <td>
                                 <div class="actions">
@@ -1762,6 +1869,9 @@
                                 </div>
                             </td>
                             <td>Guitar Center Voice Agent</td>
+                            <td class="tags-cell" data-feedback-id="5">
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
+                            </td>
                             <td style="white-space: nowrap;">04/15/2026</td>
                             <td>
                                 <div class="actions">
@@ -1801,6 +1911,9 @@
                                 </div>
                             </td>
                             <td>Guitar Center Voice Agent</td>
+                            <td class="tags-cell" data-feedback-id="6">
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
+                            </td>
                             <td style="white-space: nowrap;">04/20/2026</td>
                             <td>
                                 <div class="actions">
@@ -1840,6 +1953,9 @@
                                 </div>
                             </td>
                             <td>Retail Support Agent</td>
+                            <td class="tags-cell" data-feedback-id="7">
+                                <div class="tags-container" onclick="openTagsEditor(this, event)"></div>
+                            </td>
                             <td style="white-space: nowrap;">04/27/2026</td>
                             <td>
                                 <div class="actions">
@@ -2462,6 +2578,125 @@
                 icon.style.color = '#3b82f6';
             }
         }
+
+        // Tags functionality
+        let currentTagsEditor = null;
+        const allTags = {}; // Store tags per feedback ID
+
+        window.openTagsEditor = function(container, event) {
+            // Prevent row click from opening the right rail
+            event.stopPropagation();
+
+            // Close any existing editor
+            if (currentTagsEditor) {
+                currentTagsEditor.remove();
+                currentTagsEditor = null;
+            }
+
+            const cell = container.closest('.tags-cell');
+            const feedbackId = cell.getAttribute('data-feedback-id');
+            const rect = container.getBoundingClientRect();
+
+            // Create tags editor
+            const editor = document.createElement('div');
+            editor.className = 'tags-editor';
+            editor.style.position = 'fixed';
+            editor.style.top = (rect.bottom + 5) + 'px';
+            editor.style.left = rect.left + 'px';
+
+            const currentTags = allTags[feedbackId] || [];
+
+            editor.innerHTML = `
+                <input type="text" class="tags-input" placeholder="Add tag and press Enter..." />
+                <div class="tags-hint" style="font-size: 11px; color: #999; margin-bottom: 8px;">Press Enter to add, Esc to close</div>
+                <div class="suggested-tags">
+                    <div class="suggested-tag">bug</div>
+                    <div class="suggested-tag">enhancement</div>
+                    <div class="suggested-tag">urgent</div>
+                    <div class="suggested-tag">needs-review</div>
+                </div>
+            `;
+
+            document.body.appendChild(editor);
+            currentTagsEditor = editor;
+
+            const input = editor.querySelector('.tags-input');
+            input.focus();
+
+            // Handle Enter key to add tag
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tagText = this.value.trim();
+                    if (tagText) {
+                        addTag(feedbackId, tagText, container);
+                        this.value = '';
+                    }
+                } else if (e.key === 'Escape') {
+                    editor.remove();
+                    currentTagsEditor = null;
+                }
+            });
+
+            // Handle suggested tag clicks
+            editor.querySelectorAll('.suggested-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const tagText = this.textContent;
+                    addTag(feedbackId, tagText, container);
+                    input.focus();
+                });
+            });
+
+            // Close editor when clicking outside
+            function closeEditorOnClickOutside(e) {
+                if (!editor.contains(e.target) && !container.contains(e.target)) {
+                    editor.remove();
+                    currentTagsEditor = null;
+                    document.removeEventListener('click', closeEditorOnClickOutside);
+                }
+            }
+            setTimeout(() => {
+                document.addEventListener('click', closeEditorOnClickOutside);
+            }, 0);
+        };
+
+        function addTag(feedbackId, tagText, container) {
+            if (!allTags[feedbackId]) {
+                allTags[feedbackId] = [];
+            }
+
+            // Don't add duplicate tags
+            if (allTags[feedbackId].includes(tagText)) {
+                return;
+            }
+
+            allTags[feedbackId].push(tagText);
+            renderTags(feedbackId, container);
+        }
+
+        function removeTag(feedbackId, tagText, container) {
+            if (allTags[feedbackId]) {
+                allTags[feedbackId] = allTags[feedbackId].filter(t => t !== tagText);
+                renderTags(feedbackId, container);
+            }
+        }
+
+        function renderTags(feedbackId, container) {
+            const tags = allTags[feedbackId] || [];
+            container.innerHTML = '';
+
+            tags.forEach(tagText => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.innerHTML = `
+                    ${tagText}
+                    <span class="tag-remove" onclick="event.stopPropagation(); removeTag('${feedbackId}', '${tagText}', this.closest('.tags-container'))">×</span>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        window.removeTag = removeTag;
 
         window.openRail = function(title, status, reporter, agent, created, feedbackId, priority = 'p2') {
             console.log('openRail called with:', title, status);
